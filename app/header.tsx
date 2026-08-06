@@ -34,11 +34,11 @@ export default function Header() {
       <div className="max-w-6xl mx-auto h-16 flex items-center justify-between">
         <Link 
           href="/" 
-          className="font-extrabold text-xl tracking-tight text-gray-100 hover:text-blue-600 transition-colors"
+          className="group font-extrabold text-2xl tracking-tight text-gray-100 hover:text-blue-600 transition-colors"
         >
-          KidCodes
+          Kid<span className="text-blue-300 group-hover:text-blue-600 transition-colors">Codes</span>
         </Link>
-        <div className="flex space-x-8 text-sm font-semibold text-gray-300 ">
+        <div className="flex space-x-8 text-lg font-semibold text-gray-200 ">
           <Link 
             href="#contact" 
             className="hover:text-blue-600 transition-colors"
@@ -46,7 +46,7 @@ export default function Header() {
             Contact
           </Link>
           <Link 
-            href="/kidprojects" 
+            href="#featured-work" 
             className="hover:text-blue-600 transition-colors"
           >
             Projects

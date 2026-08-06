@@ -1,7 +1,7 @@
 ---
-title: "KIDPOS: Point of Sale System"
+title: "Bartr: Item Trading Platform"
 date: "2026-07-29"
-description: "A reliable POS system with rule-based fraud detection."
+description: "A simple web application for trading items between users."
 ---
 
 The proposed solution is a Point-of-Sale (POS) system made with the programming

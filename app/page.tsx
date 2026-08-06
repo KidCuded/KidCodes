@@ -1,65 +1,109 @@
-import Image from "next/image";
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="max-w-6xl mx-auto font-Plus_Jakarta_Sans text-gray-200">
+      
+      {/* 1. Hero Section: Introduction */}
+      <section id="home" className="flex items-center min-h-screen mb-20">
+        <div className="max-w-3xl mb-8">
+          <h1 className="text-7xl tracking-wide mb-4">
+            I'M AKID.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <h2 className="text-4xl text-black tracking-wider bg-blue-300 justify p-3 mb-6 inline-block">
+            SOFTWARE ENGINEER
+          </h2>
+          <p className="max-w-3xl text-xl text-gray-300 justify leading-relaxed">
+            Based in Kuala Lumpur, Malaysia. I build softwares, websites, landing pages, full-stack applications, analyze data, you name it. 
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="relative w-120 h-120 rounded-tr-full rounded-tl-full overflow-hidden m-10">
+          <Image
+            src="/images/Akid_RAW.jpg" 
+            alt="Akid"
+            fill
+            className="object-cover"
+            priority // Loads the image immediately since it's on the homepage
+          />
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* 2. Skills Section: Technical Arsenal */}
+      <section id="skills" className="mb-24">
+        <h3 className="text-3xl text-blue-300 font-bold mb-6 border-gray-500 border-b pb-4">
+          Technical Arsenal</h3>
+        <div className="flex flex-wrap gap-3">
+          {/* I have pre-filled this with a solid full-stack Java/React profile */}
+          {['Java', 'Spring Boot', 'Hibernate', 'MySQL', 'React', 'Next.js', 'JavaFX'].map((tech) => (
+            <span 
+              key={tech} 
+              className="px-4 py-2 bg-gray-100 border border-gray-200 text-gray-800 rounded-full text-sm font-semibold hover:bg-gray-200 transition-colors"
+            >
+              {tech}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      {/* 3. Featured Work: Highlighting main projects */}
+      <section id="featured-work" className="mb-24">
+        <h3 className="text-3xl text-blue-300 font-bold mb-8 border-b pb-4 border-gray-500">
+          Featured Work
+        </h3>
+        
+        <div className="group border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:border-gray-300 transition-all duration-300">
+          <div className="flex justify-between items-start mb-4">
+            <h4 className="text-2xl font-bold group-hover:text-blue-600 transition-colors">
+              Point of Sale & Fraud Detection System
+            </h4>
+            <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+              Full-Stack
+            </span>
+          </div>
+          
+          <p className="text-blue-300 mb-6 text-lg">
+            A comprehensive, single-device POS application integrating a dynamic, rule-based fraud detection module for secure catalogue and customer sales processing.
+          </p>
+          
+          {/* Using Next.js Link for fast client-side routing */}
+          <Link 
+            href="/kidprojects" 
+            className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-800"
+          >
+            Read the case study 
+            <span className="ml-2 group-hover:translate-x-1 transition-transform">
+            &rarr;
+            </span>
+          </Link>
+        </div>
+      </section>
+
+      {/* 4. Call to Action: Encouraging users to explore more */}
+      <section id="contact" className="bg-[#0a0a0a] text-white min-h-[90vh] flex flex-col items-center justify-center px-6 py-20 font-sans">
+  
+      <span className="text-blue-300 font-semibold text-xl uppercase tracking-[0.2em] mb-4">
+        CONTACT
+      </span>
+
+      <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight text-center mb-6">
+        Let's work together.
+      </h2>
+
+      <p className="text-gray-400 text-base md:text-lg text-center max-w-lg mb-10 leading-relaxed font-normal">
+        Have a project in mind? I'd love to hear about it — reach out and let's talk.
+      </p>
+
+      <a 
+        href="mailto:akidsyazwan@gmail.com"
+        className="inline-flex items-center justify-center bg-blue-300 hover:bg-[#6366f1] text-[#0a0a0a] font-semibold text-sm md:text-base px-8 py-4 rounded-full transition-all duration-300 shadow-lg hover:scale-105"
+      >
+        akidsyazwan@gmail.com
+      </a>
+
+    </section>
+
+
+    </main>
   );
 }

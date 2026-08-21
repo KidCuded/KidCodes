@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { getAllProjectsData } from '@/app/lib/markdown';
+import { FileText, Mail } from 'lucide-react';
 
 export default async function Home() {
   // Fetch all projects so you can map over them
@@ -17,9 +18,27 @@ export default async function Home() {
           <h2 className="text-4xl text-black tracking-wider bg-blue-300 justify p-3 mb-6 inline-block">
             SOFTWARE ENGINEER
           </h2>
-          <p className="max-w-3xl text-xl text-gray-300 justify leading-relaxed">
+          <p className="max-w-3xl text-xl text-gray-300 justify leading-relaxed pb-5">
             Based in Kuala Lumpur, Malaysia. I build softwares, websites, landing pages, full-stack applications, analyze data, you name it. 
           </p>
+          <div className="flex flex-wrap items-center gap-4">
+  
+            <a 
+              href="/#contact" 
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-300 text-black hover:bg-blue-700 font-semibold shadow-lg shadow-blue-600/30 transition-all duration-300"
+            >
+              <Mail className="w-5 h-5" />
+              Contact Me
+            </a>
+            <a 
+            href="/resume.pdf" 
+            download="Akid_Resume.pdf"
+            className="inline-flex items-center gap-2 px-3 py-3 border border-blue-300 text-gray-300 hover:text-white hover:border-blue-400 hover:bg-slate-800 font-semibold transition-all duration-300"
+            >
+              <FileText className="w-5 h-5" />
+              Download Resume
+            </a>
+          </div>
         </div>
         <div className="relative w-120 h-120 rounded-tr-full rounded-tl-full overflow-hidden m-10">
           <Image
@@ -34,7 +53,7 @@ export default async function Home() {
 
       {/* 2. Skills Section: Technical Arsenal */}
 
-      {/* <section id="skills" className="mb-24">
+      {/* <section id="skills" className="min-h-[80vh] flex flex-col justify-center">
         <h3 className="text-3xl text-blue-300 font-bold mb-6 border-gray-500 border-b pb-4">
           Technical Arsenal</h3>
         <div className="flex flex-wrap gap-3">
@@ -60,9 +79,10 @@ export default async function Home() {
         
         <div className="grid gap-8">
           {projects.map((project) => (
-            <div 
+            <Link 
+              href={`/${project.slug}`}
               key={project.slug} 
-              className="group border border-gray-800 rounded-2xl p-8 hover:shadow-xl hover:border-blue-600 hover:translate-x-1 transition-all duration-300"
+              className="group block border border-gray-800 rounded-2xl p-8 hover:shadow-xl hover:border-blue-600 hover:translate-x-1 transition-all duration-300"
             >
               <div className="flex justify-between items-start mb-4">
                 <h4 className="text-2xl font-bold text-blue-300">
@@ -77,16 +97,12 @@ export default async function Home() {
                 {project.description}
               </p>
               
-              <Link 
-                href={`/${project.slug}`}
-                className="inline-flex items-center text-blue-400 font-semibold hover:text-blue-300"
-              >
+              {/* Changed from <Link> to <div> to avoid nesting links */}
+              <div className="inline-flex items-center text-blue-300 font-semibold">
                 Read the case study 
-                <span className="ml-2 group-hover:translate-x-1 transition-transform">
-                  &rarr;
-                </span>
-              </Link>
-            </div>
+                <span className="ml-2 group-hover:translate-x-1 transition-transform"> &rarr; </span>
+              </div>
+            </Link>
           ))}
         </div>
         

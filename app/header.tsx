@@ -40,13 +40,13 @@ export default function Header() {
         </Link>
         <div className="flex space-x-8 text-lg font-semibold text-gray-200 ">
           <Link 
-            href="#featured-work" 
+            href="/#featured-work" 
             className="hover:text-blue-600 transition-colors"
           >
             Projects
           </Link>
           <Link 
-            href="#contact" 
+            href="/#contact" 
             className="hover:text-blue-600 transition-colors"
           >
             Contact

@@ -39,16 +39,10 @@ export default function Header() {
           Kid<span className="text-blue-300 group-hover:text-blue-600 transition-colors">Codes</span>
         </Link>
         <div className="flex space-x-8 text-lg font-semibold text-gray-200 ">
-          <Link 
-            href="/#featured-work" 
-            className="hover:text-blue-600 transition-colors"
-          >
+          <Link href="/#featured-work" className="hover:text-blue-600 transition-colors">
             Projects
           </Link>
-          <Link 
-            href="/#contact" 
-            className="hover:text-blue-600 transition-colors"
-          >
+          <Link href="/#contact" className="hover:text-blue-600 transition-colors">
             Contact
           </Link>
         </div>

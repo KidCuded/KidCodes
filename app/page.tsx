@@ -8,7 +8,7 @@ export default async function Home() {
   
   return (
     // Added horizontal padding (px-6) so content doesn't hug screen edges on mobile
-    <main className="max-w-6xl mx-auto px-6 md:px-12 font-Plus_Jakarta_Sans text-gray-200">
+    <main className="bg-black max-w-6xl mx-auto px-6 md:px-12 font-Plus_Jakarta_Sans text-gray-200">
       
       {/* 1. Hero Section: Swapped to flex-col for mobile, flex-row for desktop */}
       <section id="home" className="flex flex-col-reverse md:flex-row items-center justify-center min-h-[90vh] md:min-h-screen mb-20 gap-10 md:gap-4 pt-20 md:pt-0">

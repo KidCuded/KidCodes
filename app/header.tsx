@@ -31,14 +31,14 @@ export default function Header() {
           : "bg-transparent border-b border-transparent" // Blended seamlessly when at top
       }`}
     >
-      <div className="max-w-6xl mx-auto h-16 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto h-16 px-6 flex items-center justify-between">
         <Link 
           href="/" 
           className="group font-extrabold text-2xl tracking-tight text-gray-100 hover:text-blue-600 transition-colors"
         >
           Kid<span className="text-blue-300 group-hover:text-blue-600 transition-colors">Codes</span>
         </Link>
-        <div className="flex space-x-8 text-lg font-semibold text-gray-200 ">
+        <div className="flex space-x-8 text-lg text-gray-200 ">
           <Link href="/#featured-work" className="hover:text-blue-600 transition-colors">
             Projects
           </Link>

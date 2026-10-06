@@ -2,6 +2,7 @@
 title: "KABO: Customer Loyalty & Review Platform"
 date: "2026-10-06"
 description: "A web-based customer loyalty and review management platform integrating automated payments and push notifications."
+liveUrl: "https://kabo.my"
 ---
 
 **KABO** is a customer loyalty and review platform designed to help businesses engage customers, streamline review collection, and manage subscription-based loyalty incentives. 

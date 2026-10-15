@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { ExternalLink } from 'lucide-react';
 import { getProjectData } from '@/app/lib/markdown'; // Adjust path if needed depending on where /lib is relative to app/
 
 interface PageProps {
@@ -44,6 +45,19 @@ export default async function ProjectPage({ params }: PageProps) {
           className="prose prose-invert max-w-none prose-blue leading-relaxed space-y-6"
           dangerouslySetInnerHTML={{ __html: project.contentHtml }} 
         />
+
+        {/* Project Site button, Render the button ONLY if liveUrl exists in the markdown */}
+        {project.liveUrl && (
+          <a 
+            href={project.liveUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 mt-4 bg-blue-300 text-black hover:bg-blue-500 font-bold shadow-lg shadow-blue-600/30 transition-all duration-300"
+          >
+            <ExternalLink className="w-5 h-5" />
+            To KABO
+          </a>
+        )}
       </main>
     );
   } catch (error) {

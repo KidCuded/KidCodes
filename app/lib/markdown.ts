@@ -20,9 +20,10 @@ export async function getProjectData(slug: string) {
     
   return {
     slug,
+    liveUrl: matterResult.data.liveUrl || null, // Ensure liveUrl is included in the returned object
     contentHtml: processedContent.toString(),
     // Add the type assertion below to tell TypeScript what fields exist
-    ...(matterResult.data as { title: string; date: string; description: string }),
+    ...(matterResult.data as { title: string; date: string; description: string}),
   };
 }
 

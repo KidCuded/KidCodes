@@ -1,33 +1,28 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Syne, Plus_Jakarta_Sans } from "next/font/google";
-import Header from "@/app/header";
+import { Plus_Jakarta_Sans } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { THEME_INIT_SCRIPT } from "@/app/components/wall/theme";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta-sans",
   subsets: ["latin"],
 });
 
-const syne = Syne({
-  variable: "--font-syne",
-  subsets: ["latin"],
-});
-
-
-
 export const metadata: Metadata = {
-  title: "KidCodes",
+  metadataBase: new URL("https://kid-codes.vercel.app"),
+  title: {
+    default: "Akid — Software Engineer",
+    template: "%s · Akid — Software Engineer",
+  },
   description: "Portfolio of Akid, a Software Engineer based in Kuala Lumpur.",
+  openGraph: {
+    title: "Akid — Software Engineer",
+    description: "Portfolio of Akid, a Software Engineer based in Kuala Lumpur.",
+    url: "/",
+    siteName: "Akid — Software Engineer",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -36,13 +31,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
-        <Header />
+    // suppressHydrationWarning: the theme script may set data-room-theme before React hydrates.
+    <html lang="en" className={`${plusJakartaSans.variable} h-full antialiased`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
+      <body className="min-h-full flex flex-col bg-room-wall text-ink font-sans">
         {children}
+        <Analytics />
       </body>
     </html>
   );

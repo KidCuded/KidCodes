@@ -1,26 +1,557 @@
 @import "tailwindcss";
 
+/* Room palette: decided in docs/room-redesign-plan.md (Round 5, Q1). */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --room-wall: #0f1a2e;
+  --room-floor: #162238;
+  --room-wood: #8a5a3b;
+  --lamp-glow: #ffc879;
+  --accent: #93c5fd;
+  --ink: #e5e7eb;
+  --ink-muted: #a7b0c0;
+}
+
+/* Room colours that change between night (default) and day. */
+:root {
+  --rm-bg: #0f1a2e;
+  --rm-backdrop: #1a2d55;
+  --rm-wall-left: #15233d;
+  --rm-wall-right: #1b2c4b;
+  --rm-wall-cap: #2e4068;
+  --rm-wall-end-lit: #26375a;
+  --rm-wall-end-shade: #18253f;
+  --rm-floor: #1d2b45;
+  --rm-floor-line: #16223a;
+  --rm-slab-front: #1f2e4b;
+  --rm-slab-side: #152039;
+  --rm-baseboard: #24365a;
+  --rm-rug: #253a60;
+  --rm-rug-border: #3a5585;
+}
+[data-room-theme="day"] {
+  --rm-bg: #cfe3f4;
+  --rm-backdrop: #ffffff;
+  --rm-wall-left: #d8cab2;
+  --rm-wall-right: #ece2cf;
+  --rm-wall-cap: #f7f1e6;
+  --rm-wall-end-lit: #e6dac4;
+  --rm-wall-end-shade: #c7b89e;
+  --rm-floor: #b98b5f;
+  --rm-floor-line: #a57a50;
+  --rm-slab-front: #9d7249;
+  --rm-slab-side: #865f3b;
+  --rm-baseboard: #f4ede0;
+  --rm-rug: #6d9cc8;
+  --rm-rug-border: #4c7cab;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-room-wall: var(--room-wall);
+  --color-room-floor: var(--room-floor);
+  --color-room-wood: var(--room-wood);
+  --color-lamp-glow: var(--lamp-glow);
+  --color-accent: var(--accent);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --font-sans: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
 }
 
 body {
-  background-color: #000000; /* or any dark hex color you prefer */
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--room-wall);
+  color: var(--ink);
+  font-family: var(--font-sans);
 }
+
+/* Visible keyboard focus everywhere, in the accent colour. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Room layouts: both are in the HTML; show one by aspect ratio (CSS only, no JS). */
+.room-portrait { display: none; }
+@media (max-aspect-ratio: 1/1) {
+  .room-desktop { display: none; }
+  .room-portrait { display: block; }
+}
+
+/* Room objects: invisible hit areas, focus rings and labels (step c). */
+.room-link { cursor: pointer; outline: none; }
+.room-hit { fill: var(--accent); fill-opacity: 0; stroke: none; }
+.room-link:focus-visible .room-hit {
+  fill-opacity: 0.08;
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-dasharray: 7 5;
+  vector-effect: non-scaling-stroke;
+}
+.room-label { opacity: 1; transition: opacity 0.4s ease; pointer-events: none; }
+.room-label[data-intro="false"] { opacity: 0; }
+.room-label-pill { fill: #0f1a2e; fill-opacity: 0.88; stroke: var(--accent); stroke-opacity: 0.7; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.room-label-text { fill: var(--ink); font-weight: 600; }
+/* After the ~3 s intro (LabelsIntro adds .labels-done), labels show on hover or focus only. */
+.labels-done .room-label { opacity: 0; }
+/* Each label is the next sibling of its link (outside it, so the link's box is just its hit area). */
+.room-link:hover + .room-label,
+.room-link:focus-visible + .room-label { opacity: 1; }
+/* Touch screens have no hover, and reduced motion keeps cues still: labels stay visible. */
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .labels-done .room-label[data-intro="true"],
+  .room-label[data-intro="true"] { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .room-label { transition: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Room hover / focus animations (step d). The art sits under the link layer,
+   so `:has()` on the room SVG ties each link's hover or keyboard focus to its
+   drawing. Units inside the pegboard face are room units (1 = 50 px).
+   --------------------------------------------------------------------------- */
+.room-svg [data-room],
+.room-svg [data-part],
+.room-svg .book-art {
+  transform-box: fill-box;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease;
+}
+/* Objects placed with a transform="…" attribute must keep the SVG default
+   origin, or fill-box shifts them (it moved the clock and its hands). */
+.room-svg [data-room="clock"],
+.room-svg [data-room="light-switch"] { transform-box: view-box; transition: none; }
+
+/* Resume: lifts off the board, shadow deepens, corner curls. */
+.room-svg [data-room="resume"] { transform-origin: 50% 0%; }
+.room-svg:has(.room-link[data-target="resume"]:is(:hover, :focus-visible)) [data-room="resume"] {
+  transform: translate(-0.05px, -0.14px) rotate(-1.5deg);
+}
+.room-svg:has(.room-link[data-target="resume"]:is(:hover, :focus-visible)) [data-room="resume"] [data-part="shadow"] {
+  transform: translate(0.08px, 0.12px);
+  opacity: 0.4;
+}
+.room-svg:has(.room-link[data-target="resume"]:is(:hover, :focus-visible)) [data-part="curl"] { opacity: 1; }
+
+/* Envelope: jumps, flap flips open, a card slides out. */
+.room-svg:has(.room-link[data-target="envelope"]:is(:hover, :focus-visible)) [data-room="envelope"] {
+  animation: room-jump 0.5s cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+.room-svg [data-part="flap"] { transform-origin: 50% 0%; }
+.room-svg:has(.room-link[data-target="envelope"]:is(:hover, :focus-visible)) [data-part="flap"] { transform: scaleY(-1); }
+.room-svg:has(.room-link[data-target="envelope"]:is(:hover, :focus-visible)) [data-part="card"] {
+  opacity: 1;
+  transform: translateY(-0.5px);
+  transition-delay: 0.12s;
+}
+@keyframes room-jump {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-0.28px); }
+  70% { transform: translateY(0.03px); }
+}
+
+/* Person: head turns toward the viewer, empty speech bubble pops up. */
+.room-svg:has(.room-link[data-target="person"]:is(:hover, :focus-visible)) [data-part="hair"] { transform: translateX(9px); }
+.room-svg:has(.room-link[data-target="person"]:is(:hover, :focus-visible)) [data-part="ear"] { transform: translateX(-5px); opacity: 0; }
+.room-svg [data-part="bubble"] {
+  opacity: 0;
+  transform: scale(0.6);
+  transform-origin: 70% 100%;
+  pointer-events: none;
+}
+.room-svg:has(.room-link[data-target="person"]:is(:hover, :focus-visible)) [data-part="bubble"] { opacity: 1; transform: scale(1); }
+
+/* Computer: the screen glow brightens. */
+.room-svg [data-part="glow"] { opacity: 0.75; transform-origin: 50% 50%; }
+
+/* Painting (decorative): tilts a little. */
+.room-svg [data-room="painting"] { transform-origin: 50% 0%; }
+.room-svg [data-room="painting"]:hover { transform: rotate(-2.5deg); }
+
+/* Bookshelf: hovering the shelf sends a wave through the books
+   (project books lift on their own hover: rules generated in RoomScene). */
+.room-svg:has(.room-shelf-hit:hover) .book-art {
+  animation: room-hop 0.45s ease calc(var(--i, 0) * 35ms) both;
+}
+@keyframes room-hop {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-7px); }
+}
+
+/* Whole-room lean that follows the pointer (RoomTilt sets --tx/--ty/--kx/--ky). 2D only, so it stays sharp. */
+.room-tilt {
+  transform: translate(var(--tx, 0px), var(--ty, 0px)) skew(var(--kx, 0deg), var(--ky, 0deg));
+  transition: transform 0.3s ease-out;
+}
+
+/* Reduced motion: no tilt, no hops or jumps, no animated transitions.
+   State changes (flap open, bubble, labels) still show, instantly. */
+@media (prefers-reduced-motion: reduce) {
+  .room-tilt { transform: none !important; transition: none; }
+  .room-svg [data-room],
+  .room-svg [data-part],
+  .room-svg .book-art { transition: none !important; animation: none !important; }
+}
+
+/* ---------------------------------------------------------------------------
+   Day / night (data-room-theme on <html>; night is the default).
+   --------------------------------------------------------------------------- */
+#room { background: var(--rm-bg); transition: background-color 0.6s ease; }
+.room-svg polygon,
+.room-svg rect,
+.room-svg path,
+.room-svg stop { transition: fill 0.6s ease, stop-color 0.6s ease, opacity 0.6s ease; }
+
+/* Window: one sky per theme; light on the floor. */
+.room-svg [data-sky="day"] { opacity: 0; transition: opacity 0.6s ease; }
+.room-svg [data-sky="night"] { opacity: 1; transition: opacity 0.6s ease; }
+[data-room-theme="day"] .room-svg [data-sky="day"] { opacity: 1; }
+[data-room-theme="day"] .room-svg [data-sky="night"] { opacity: 0; }
+.room-svg .window-beam { pointer-events: none; }
+.room-svg .window-beam-day { opacity: 0; }
+[data-room-theme="day"] .room-svg .window-beam-day { opacity: 0.35; }
+
+/* Lamp off by day; the screen glows less in daylight. */
+[data-room-theme="day"] .room-svg .lamp-light { opacity: 0 !important; }
+[data-room-theme="day"] .room-svg .lamp-bulb { opacity: 0.35; }
+[data-room-theme="day"] .room-svg [data-part="glow"] { opacity: 0.3; }
+
+/* Light switch: nub down at night, up by day. */
+.room-svg [data-part="switch-nub"] { transform-box: fill-box; }
+[data-room-theme="day"] .room-svg [data-part="switch-nub"] { transform: translateY(-0.13px); }
+
+@media (prefers-reduced-motion: reduce) {
+  #room,
+  .room-svg polygon,
+  .room-svg rect,
+  .room-svg path,
+  .room-svg stop,
+  .room-svg [data-sky] { transition: none !important; }
+}
+
+/* ---------------------------------------------------------------------------
+   Ambient details (designer round 1). All motion is opt-in: only when the
+   visitor hasn't asked for reduced motion. Static fallbacks below.
+   --------------------------------------------------------------------------- */
+.room-svg .code-line,
+.room-svg [data-part="torso"],
+.room-svg [data-part="duck-body"] { transform-box: fill-box; }
+.room-svg .code-line { transform-origin: 0% 50%; }
+.room-svg .code-cursor { opacity: 0; }
+.room-svg .steam { opacity: 0.45; }
+.room-svg [data-part="torso"] { transform-origin: 50% 100%; }
+.room-svg [data-part="duck-body"] { transform-origin: 50% 100%; }
+.room-svg .aircon-led { opacity: 0.9; }
+[data-room-theme="day"] .room-svg .aircon-led { opacity: 0.25; }
+[data-room-theme="day"] .room-svg .steam { opacity: 0.25; }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Monitor: code types out line by line, holds, clears; cursor blinks. */
+  .room-svg .code-line { animation: room-type 9s linear infinite; animation-delay: calc(var(--i, 0) * 0.55s); }
+  .room-svg .code-cursor { animation: room-blink 1s steps(1) infinite; }
+  /* Kopi steam rises and fades. */
+  .room-svg .steam { animation: room-steam 3.2s ease-in-out infinite; animation-delay: calc(var(--i, 0) * 1.4s); transform-box: fill-box; }
+  /* The person breathes (paused while hovered or focused, so the head turn reads cleanly). */
+  .room-svg [data-part="torso"] { animation: room-breathe 4.5s ease-in-out infinite; }
+  .room-svg:has(.room-link[data-target="person"]:is(:hover, :focus-visible)) [data-part="torso"] { animation-play-state: paused; }
+  /* Stars twinkle at night; clouds drift by day. */
+  .room-svg .twinkle { animation: room-twinkle 5s ease-in-out infinite; }
+  .room-svg .twinkle:nth-child(2n) { animation-duration: 7s; animation-delay: 1.3s; }
+  .room-svg .twinkle:nth-child(3n) { animation-duration: 9s; animation-delay: 2.1s; }
+  .room-svg .cloud-drift { animation: room-drift 22s ease-in-out infinite alternate; }
+  /* Rubber duck wobbles on hover. */
+  .room-svg [data-room="duck"]:hover [data-part="duck-body"] { animation: room-wobble 0.5s ease-in-out; }
+}
+/* Typing: steps(--n) reveals exactly one character block per step
+   (each line's width is --n blocks), so it reads as keystrokes, not a sweep. */
+@keyframes room-type {
+  0% { transform: scaleX(0); animation-timing-function: steps(var(--n, 10), end); }
+  6% { transform: scaleX(1); }
+  80% { transform: scaleX(1); opacity: 0.85; }
+  88%, 100% { transform: scaleX(1); opacity: 0; }
+}
+@keyframes room-blink { 0% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes room-steam {
+  0% { opacity: 0; transform: translateY(4px); }
+  40% { opacity: 0.55; }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+@keyframes room-breathe { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.015); } }
+@keyframes room-twinkle { 0%, 100% { opacity: 0.9; } 50% { opacity: 0.25; } }
+@keyframes room-drift { from { transform: translateX(-0.25px); } to { transform: translateX(0.25px); } }
+@keyframes room-wobble {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-9deg); }
+  75% { transform: rotate(8deg); }
+}
+
+/* Fairy lights: warm at night, off (pale glass) by day. Stickers dim a little at night. */
+.room-svg .fairy-glass { fill: #ffd894; }
+.room-svg .fairy-halo { opacity: 1; }
+[data-room-theme="day"] .room-svg .fairy-glass { fill: #eef1f5; }
+[data-room-theme="day"] .room-svg .fairy-halo { opacity: 0 !important; }
+[data-room-theme="day"] .room-svg .fairy-wire { stroke: #a9b0bd; }
+.room-svg .stickers { opacity: 0.82; }
+[data-room-theme="day"] .room-svg .stickers { opacity: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  .room-svg .fairy-halo { animation: room-fairy 6s ease-in-out infinite; animation-delay: calc(var(--g, 0) * -2s); }
+}
+@keyframes room-fairy { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+/* Day mode: the accent is too light against cream walls for a focus ring. */
+[data-room-theme="day"] .room-link:focus-visible .room-hit { stroke: #1d4ed8; fill: #1d4ed8; }
+
+/* ---------------------------------------------------------------------------
+   In-room views (step e): one native <dialog>, a panel per view.
+   --------------------------------------------------------------------------- */
+.room-dialog {
+  margin: auto;
+  padding: 16px;
+  border: 0;
+  background: transparent;
+  max-width: 100vw;
+  max-height: 100dvh;
+  overflow: visible;
+  color: var(--ink);
+}
+.room-dialog::backdrop {
+  background: rgb(5 10 22 / 0.62);
+  backdrop-filter: blur(3px);
+}
+.room-panel {
+  position: relative;
+  width: min(92vw, 640px);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  border-radius: 16px;
+  padding: 24px;
+  background: var(--room-floor);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  box-shadow: 0 30px 80px rgb(0 0 0 / 0.5);
+}
+.room-panel-title {
+  margin: 0 40px 16px 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #fff;
+}
+.room-panel-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  color: var(--ink);
+  background: rgb(255 255 255 / 0.06);
+}
+.room-panel-close:hover { background: rgb(255 255 255 / 0.14); }
+
+/* Resume: the paper, close up. */
+.room-panel-resume { width: min(92vw, 720px); padding: 20px; }
+
+/* Contact: the card slides out of the envelope; the card has its own frame. */
+.room-panel-contact { width: auto; padding: 0; background: transparent; border: 0; box-shadow: none; overflow: visible; }
+.room-panel-contact .room-panel-close { top: 10px; right: 10px; }
+
+/* About: the person's speech bubble, expanded. */
+.room-panel-about {
+  width: min(92vw, 460px);
+  background: var(--paper, #f4f1ea);
+  color: #1b2235;
+  border: 0;
+  border-radius: 28px;
+  overflow: visible;
+}
+.room-panel-about .room-panel-title { color: #1b2235; }
+.room-panel-about .room-panel-close { color: #1b2235; background: rgb(0 0 0 / 0.06); }
+.room-panel-about::after {
+  /* the bubble's tail */
+  content: "";
+  position: absolute;
+  left: 64%;
+  bottom: -18px;
+  border: 12px solid transparent;
+  border-top: 14px solid #f4f1ea;
+  border-bottom: 0;
+}
+.room-bubble p { color: #1b2235; }
+
+/* Quick links: the computer screen, close up. */
+.room-panel-quick {
+  width: min(92vw, 520px);
+  background: #0a1830;
+  border: 10px solid #1d2533;
+  border-radius: 14px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  box-shadow: 0 0 60px rgb(147 197 253 / 0.18), 0 30px 80px rgb(0 0 0 / 0.5);
+}
+.room-panel-quick .room-panel-title { color: var(--accent); }
+.room-terminal-prompt { color: var(--lamp-glow); margin-bottom: 8px; }
+.room-quick-list { display: grid; gap: 4px; }
+.room-quick-list a,
+.room-quick-list button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--accent);
+  font: inherit;
+  font-size: 1.05rem;
+}
+.room-quick-list a::before,
+.room-quick-list button::before { content: "> "; color: var(--ink-muted); }
+.room-quick-list a:hover,
+.room-quick-list button:hover { background: rgb(147 197 253 / 0.1); }
+
+/* Rendered Markdown on project pages (no typography plugin installed). */
+.project-body h2,
+.project-body h3 {
+  color: #fff;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+.project-body h2 { font-size: 1.5rem; }
+.project-body h3 { font-size: 1.25rem; }
+.project-body p { margin-bottom: 1rem; line-height: 1.75; }
+.project-body ul { list-style: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+.project-body ol { list-style: decimal; padding-left: 1.5rem; margin-bottom: 1rem; }
+.project-body hr { border-color: rgb(255 255 255 / 0.1); margin: 2rem 0; }
+.project-body li { margin-bottom: 0.5rem; line-height: 1.7; }
+.project-body strong { color: #fff; }
+.project-body a { color: var(--accent); text-decoration: underline; }
+
+/* ---------------------------------------------------------------------------
+   The street outside the window (CityView). Night by default, day below.
+   --------------------------------------------------------------------------- */
+:root {
+  --wv-far: #1f2a50; --wv-mid: #18213f; --wv-tower: #222d55; --wv-tower-lit: #2c3a6a; --wv-beacon: #ff6b6b;
+  --wv-left: #0f162c; --wv-left-mid: #121a33; --wv-left-far: #151e3a;
+  --wv-right: #19223f; --wv-right-mid: #1c2645; --wv-right-far: #1f2a4c;
+  --wv-win: #0b1124; --wv-lit: #ffcf7a;
+  --wv-street: #151b2d; --wv-walk: #222a40; --wv-line: #5d6683;
+  --wv-car-0: #3a4566; --wv-car-1: #2e3756; --wv-car-2: #444f70; --wv-car-3: #333d5e; --wv-glass: #10162a; --wv-tail: #ff5a4f;
+  --wv-tree: #12271f; --wv-tree-lit: #173226; --wv-trunk: #151a22; --wv-pole: #2a3350; --wv-lamp: #ffd98a;
+}
+[data-room-theme="day"] {
+  --wv-far: #b9cbe0; --wv-mid: #a9bdd3; --wv-tower: #8ea7c3; --wv-tower-lit: #c9d9ea; --wv-beacon: #c9d9ea;
+  --wv-left: #b9a68c; --wv-left-mid: #c8b8a2; --wv-left-far: #d2c6b5;
+  --wv-right: #efe8dc; --wv-right-mid: #e4ddd1; --wv-right-far: #d8d2c8;
+  --wv-win: #7d8fa3; --wv-lit: #7d8fa3;
+  --wv-street: #77787d; --wv-walk: #b3aca1; --wv-line: #f1ead2;
+  --wv-car-0: #d0473d; --wv-car-1: #f2f2ee; --wv-car-2: #2f4b7c; --wv-car-3: #e6b632; --wv-glass: #5c6f86; --wv-tail: #c0392b;
+  --wv-tree: #3f8a52; --wv-tree-lit: #5aa86a; --wv-trunk: #6b4f3a; --wv-pole: #5d6470; --wv-lamp: #9aa3ad;
+}
+.room-svg .wv-win { fill: var(--wv-win); }
+.room-svg .wv-lit { fill: var(--wv-lit); }
+
+/* ---------------------------------------------------------------------------
+   The bush: hover rustles the leaves, a click waters it (drops + flowers).
+   --------------------------------------------------------------------------- */
+.room-svg .leaf { transform-origin: 0 0; }
+.room-svg [data-room="plant"] [data-part="flowers"] { transform-origin: 50% 100%; transform: scale(0.3); opacity: 0; }
+.room-svg [data-room="plant"][data-bloom] [data-part="flowers"] { transform: scale(1); opacity: 1; }
+.room-svg .plant-drops { opacity: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .room-svg:has(.room-link[data-target="plant"]:hover) .leaf {
+    animation: room-rustle 0.9s ease-in-out;
+    animation-delay: calc(var(--i, 0) * 0.025s);
+  }
+  .room-svg [data-room="plant"][data-watered] .leaf {
+    animation: room-rustle-big 0.8s ease-in-out;
+    animation-delay: calc(var(--i, 0) * 0.015s);
+  }
+  .room-svg [data-room="plant"][data-watered] .plant-drops { opacity: 1; }
+  .room-svg [data-room="plant"][data-watered] .plant-drops path {
+    animation: room-drip 0.9s ease-in both;
+    animation-delay: calc(var(--i, 0) * 0.08s);
+  }
+}
+@keyframes room-rustle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  55% { transform: rotate(4deg); }
+  80% { transform: rotate(-2deg); }
+}
+@keyframes room-rustle-big {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-9deg); }
+  50% { transform: rotate(7deg); }
+  75% { transform: rotate(-3deg); }
+}
+@keyframes room-drip {
+  0% { transform: translateY(-14px); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translateY(26px); opacity: 0; }
+}
+
+/* ---------------------------------------------------------------------------
+   One-wall room (components/wall). Wall colours: navy at night, sage by day.
+   --------------------------------------------------------------------------- */
+:root {
+  --wl-wall: #16233d; --wl-wall-top: #0d1527;
+  --wl-skirt: #1d2b48; --wl-skirt-top: #273859;
+  --wl-floor: #2f2119; --wl-plank: #261a13;
+  --wl-rug: #1f3152; --wl-rug-border: #314a75;
+  --wl-shadow: 0.25; --wl-drop: 0.18;
+}
+[data-room-theme="day"] {
+  --wl-wall: #aebda3; --wl-wall-top: #a3b398;
+  --wl-skirt: #f3f1ea; --wl-skirt-top: #ffffff;
+  --wl-floor: #c9a57a; --wl-plank: #b8936a;
+  --wl-rug: #5b7bb0; --wl-rug-border: #3f5f95;
+  --wl-shadow: 0.12; --wl-drop: 0.12;
+}
+.wall-svg { overflow: hidden; }
+.wall-svg .contact-shadow { opacity: var(--wl-shadow); transition: opacity 0.6s ease; }
+.wall-svg .drop-shadow { opacity: var(--wl-drop); transition: opacity 0.6s ease; }
+.wall-svg .window-beam-night { opacity: 0.12; }
+[data-room-theme="day"] .wall-svg .window-beam-night { opacity: 0; }
+[data-room-theme="day"] .wall-svg .window-beam-day { opacity: 0.3; }
+
+/* Layered parallax (Parallax sets --px/--py from -1 to 1). Nearer layers move more. */
+.wall-svg .wl-l1,
+.wall-svg .wl-l2,
+.wall-svg .wl-l3 { transition: transform 0.35s ease-out; }
+/* --pk scales the shift per layout: the phone layout is drawn ~0.43× size, so it moves more units. */
+.wall-svg { --pk: 1; }
+.wall-svg.room-portrait { --pk: 2.4; }
+.wall-svg .wl-l1 { transform: translate(calc(var(--px, 0) * var(--pk) * -4px), calc(var(--py, 0) * var(--pk) * -4px)); }
+.wall-svg .wl-l2 { transform: translate(calc(var(--px, 0) * var(--pk) * -9px), calc(var(--py, 0) * var(--pk) * -9px)); }
+.wall-svg .wl-l3 { transform: translate(calc(var(--px, 0) * var(--pk) * -13px), calc(var(--py, 0) * var(--pk) * -13px)); }
+.wall-parallax { transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .wall-svg .wl-l1,
+  .wall-svg .wl-l2,
+  .wall-svg .wl-l3 { transform: none !important; transition: none; }
+}
+
+/* Night lighting (NightLights): a dark wash with lit areas cut out, then glows. Gone by day. */
+.wall-svg .night-dim { opacity: 0.55; transition: opacity 0.6s ease; pointer-events: none; }
+.wall-svg .night-glow { opacity: 1; transition: opacity 0.6s ease; pointer-events: none; }
+[data-room-theme="day"] .wall-svg .night-dim,
+[data-room-theme="day"] .wall-svg .night-glow { opacity: 0; }
+
+/* Pegboard strip light: the diffuser glows at night, pale by day. */
+.wall-svg .strip-diffuser { fill: #fff3cf; }
+[data-room-theme="day"] .wall-svg .strip-diffuser { fill: #eef0f3; }
+
+/* Akid is drawn above the night lighting, so dim him directly at night. */
+.wall-svg .person-layer { filter: brightness(0.62) saturate(0.9); transition: filter 0.6s ease; }
+[data-room-theme="day"] .wall-svg .person-layer { filter: none; }
+
+/* Phone screen: lit at night, a dim glossy grey by day. */
+.wall-svg .phone-screen { fill: #8fb8ff; }
+[data-room-theme="day"] .wall-svg .phone-screen { fill: #4b5d7a; }
+
+/* One-page site: smooth jumps between sections, landing below the sticky header. */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+.page-section { scroll-margin-top: 4.5rem; }

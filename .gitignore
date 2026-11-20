@@ -39,3 +39,18 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Claude Code: local worktrees and personal settings
+/.claude/worktrees/
+/.claude/settings.local.json
+
+# Windows / editor clutter
+Thumbs.db
+desktop.ini
+*.log

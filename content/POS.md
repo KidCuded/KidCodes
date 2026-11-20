@@ -1,7 +1,10 @@
 ---
+slug: "kidpos"
 title: "KIDPOS: Point of Sale System"
 date: "2026-07-29"
 description: "A comprehensive Java-based POS application featuring a service-oriented backend and a custom rule-based fraud detection engine."
+image: "/images/projects/KidPOS.webp"
+tags: ["Java", "JavaFX", "Spring Boot", "MySQL"]
 ---
 
 **KIDPOS** is a robust Point-of-Sale (POS) application engineered to make transaction processing secure, efficient, and highly reliable. Designed with a service-oriented architecture, it bridges a responsive desktop touchscreen interface with a powerful backend server.

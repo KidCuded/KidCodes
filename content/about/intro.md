@@ -1,4 +1,4 @@
 <!-- DRAFT written by Claude from the old hero text. Akid: edit this in your own words before merging. Keep it to 2–3 short sentences so it fits the speech bubble. -->
 I'm Akid, a software engineer based in Kuala Lumpur, Malaysia.
 
-I build full-stack web apps, desktop software and landing pages, most recently KABO, a loyalty and review platform for local businesses. I like turning messy real-world problems into simple, reliable tools.
+I build full-stack web apps, landing pages, and desktop software, most recently KABO, a loyalty and review platform for local businesses. I thrive on taking on new challenges and continuously expanding my skill set. To make room for that growth, I’ve developed a strong focus on time management, which naturally sparked my passion for building automated, efficient workflows. 

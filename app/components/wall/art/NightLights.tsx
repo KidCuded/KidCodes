@@ -30,6 +30,8 @@ export default function NightLights({ layout }: { layout: WallLayout }) {
   const scr = ST.screen;
   const mx = scr.x + scr.w / 2;
   const phoneX = (ST.phone.x0 + ST.phone.x1) / 2;
+  const lap = ST.laptop;
+  const lapX = (lap.x0 + lap.x1) / 2;
   const top = ST.desk.top;
   const strip = stripGeometry(layout);
   const peg = layout.pegboard;
@@ -76,6 +78,8 @@ export default function NightLights({ layout }: { layout: WallLayout }) {
             <rect x={scr.x - 4} y={scr.y - 4} width={scr.w + 8} height={scr.h + 8} rx={6} fill="#000" />
             <ellipse cx={mx} cy={top + 4} rx={150} ry={34} fill={`url(#${hole})`} />
             <ellipse cx={phoneX} cy={top - 4} rx={45} ry={28} fill={`url(#${hole})`} />
+            <polygon points={`${lap.x0 + 12},${top - 80} ${lap.x1 - 21},${top - 75} ${lap.x1 - 21},${top - 13} ${lap.x0 + 12},${top - 10}`} fill="#000" />
+            <ellipse cx={lapX} cy={top + 2} rx={90} ry={24} fill={`url(#${hole})`} />
           </g>
         </mask>
       </defs>
@@ -102,7 +106,8 @@ export default function NightLights({ layout }: { layout: WallLayout }) {
         <g transform={stationTransform}>
           {/* Screen light falls forward onto the desk (the wall behind the monitor stays dark) */}
           <ellipse cx={mx} cy={top + 2} rx={130} ry={16} fill={`url(#${blue})`} opacity={0.6 * k} style={{ mixBlendMode: "screen" }} />
-          {/* Lamp: warm pool on the desk and a soft glow around the shade */}
+          {/* Laptop: its screen lights the desk in front of it */}
+          <ellipse cx={lapX} cy={top + 1} rx={80} ry={11} fill={`url(#${blue})`} opacity={0.55 * k} style={{ mixBlendMode: "screen" }} />
 
           {/* Phone: a cool glow lifting off the screen */}
           <ellipse cx={phoneX} cy={top - 4} rx={32} ry={9} fill={`url(#${blue})`} opacity={0.9 * k} />

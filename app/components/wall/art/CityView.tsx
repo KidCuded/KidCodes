@@ -102,16 +102,44 @@ export default function CityView({ w, h }: { w: number; h: number }) {
     const b = mix(vp, [0.5 * w, nearBottom], t + (depth[i + 1] - t) * 0.5);
     return { a, b, wd: 0.012 * w * (0.4 + t * 2) };
   });
+  /*
+   * Cars drive away down the street. A car's screen position and size both
+   * scale with t (1 = at the glass, 0 = at the vanishing point). Driving at a
+   * steady speed, t falls like 1 / distance, so they slow and shrink as they
+   * go, then slip behind the mullion that runs through the vanishing point.
+   * The keyframes are generated here; with reduced motion they sit still.
+   */
+  const T0 = 0.95; // start below the sill (out of view)
+  const T1 = 0.06; // end behind the mullion
+  const carAt = (lane: number, t: number) => {
+    const [x, y] = mix(vp, [0.5 * w + lane * w * 1.2, nearBottom], t);
+    return { x, y, s: t * 0.22 * w };
+  };
   const cars = [
-    { t: 0.3, lane: -0.18, c: 0 },
-    { t: 0.45, lane: 0.2, c: 1 },
-    { t: 0.62, lane: -0.2, c: 2 },
-    { t: 0.2, lane: 0.16, c: 3 },
-  ].map(({ t, lane, c }) => {
-    const [x, yy] = mix(vp, [0.5 * w + lane * w * 1.2, nearBottom], t);
-    const s = t * 0.22 * w;
-    return { x, y: yy, s, c };
-  });
+    { lane: 0.18, c: 0, delay: 0, dur: 11, still: 0.45 },
+    { lane: -0.18, c: 1, delay: 3.5, dur: 13, still: 0.3 },
+    { lane: 0.18, c: 2, delay: 6.5, dur: 12, still: 0.2 },
+    { lane: -0.18, c: 3, delay: 9, dur: 10, still: 0.62 },
+  ];
+  const tag = `wv${Math.round(w * 1000)}x${Math.round(h * 1000)}`;
+  const N = 16;
+  const keyframes = cars
+    .map(({ lane, c }) => {
+      const frames = Array.from({ length: N + 1 }, (_, k) => {
+        const p = k / N;
+        // Distance grows with time (eased, so they spend less time as specks in the distance)
+        const d = 1 / T0 + p ** 1.7 * (1 / T1 - 1 / T0);
+        const { x, y, s } = carAt(lane, 1 / d);
+        return `${(p * 100).toFixed(2)}% { transform: translate(${x.toFixed(4)}px, ${y.toFixed(4)}px) scale(${s.toFixed(5)}); }`;
+      }).join(" ");
+      return `@keyframes ${tag}-car${c} { ${frames} }`;
+    })
+    .join(" ");
+  const carCss =
+    keyframes +
+    ` @media (prefers-reduced-motion: no-preference) { ` +
+    cars.map(({ c, delay, dur }) => `  .${tag}-car${c} { animation: ${tag}-car${c} ${dur}s linear ${-delay}s infinite; }`).join(" ") +
+    ` }`;
   const trees = [0.32, 0.46, 0.62, 0.82].map((t) => {
     const [x, yy] = mix(vp, [0.08 * w, nearBottom], t);
     return { x, y: yy, r: t * 0.13 * w };
@@ -140,15 +168,20 @@ export default function CityView({ w, h }: { w: number; h: number }) {
       {dashes.map(({ a, b, wd }) => (
         <line key={a[1]} x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} strokeWidth={wd} style={{ stroke: "var(--wv-line)" }} />
       ))}
-      {cars.map(({ x, y, s, c }) => (
-        <g key={c}>
-          <rect x={x - s / 2} y={y - s * 0.55} width={s} height={s * 0.45} rx={s * 0.08} style={{ fill: `var(--wv-car-${c})` }} />
-          <rect x={x - s * 0.32} y={y - s * 0.78} width={s * 0.64} height={s * 0.28} rx={s * 0.08} style={{ fill: `var(--wv-car-${c})` }} />
-          <rect x={x - s * 0.26} y={y - s * 0.74} width={s * 0.52} height={s * 0.18} style={{ fill: "var(--wv-glass)" }} />
-          <circle cx={x - s * 0.36} cy={y - s * 0.3} r={s * 0.07} style={{ fill: "var(--wv-tail)" }} />
-          <circle cx={x + s * 0.36} cy={y - s * 0.3} r={s * 0.07} style={{ fill: "var(--wv-tail)" }} />
-        </g>
-      ))}
+      <style>{carCss}</style>
+      {cars.map(({ lane, c, still }) => {
+        // Drawn at unit size around (0, 0); the transform (or the animation) places and scales it.
+        const pos = carAt(lane, still);
+        return (
+          <g key={c} className={`${tag}-car${c}`} transform={`translate(${pos.x} ${pos.y}) scale(${pos.s})`}>
+            <rect x={-0.5} y={-0.55} width={1} height={0.45} rx={0.08} style={{ fill: `var(--wv-car-${c})` }} />
+            <rect x={-0.32} y={-0.78} width={0.64} height={0.28} rx={0.08} style={{ fill: `var(--wv-car-${c})` }} />
+            <rect x={-0.26} y={-0.74} width={0.52} height={0.18} style={{ fill: "var(--wv-glass)" }} />
+            <circle cx={-0.36} cy={-0.3} r={0.07} style={{ fill: "var(--wv-tail)" }} />
+            <circle cx={0.36} cy={-0.3} r={0.07} style={{ fill: "var(--wv-tail)" }} />
+          </g>
+        );
+      })}
 
       {/* Right side: lit by the sun by day */}
       <polygon points={fmt(right[2].quad)} style={{ fill: "var(--wv-right-far)" }} />

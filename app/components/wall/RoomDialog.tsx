@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Link from "next/link";
 import { motion, MotionConfig, useAnimate } from "motion/react";
 import { X } from "lucide-react";
 import ResumeView from "@/app/components/content/ResumeView";
 import ContactCard from "@/app/components/content/ContactCard";
 import AboutContent from "@/app/components/content/AboutContent";
+import QuickTerminal from "./QuickTerminal";
 
 export type RoomView = "resume" | "contact" | "about" | "quick";
 
@@ -122,7 +122,7 @@ export default function RoomDialog({ view, origin, about, onClose, onSwap }: Pro
             animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
             transition={{ type: "spring", stiffness: 260, damping: 26, opacity: { duration: 0.18 } }}
           >
-            <h2 id={titleId} className={view === "contact" ? "sr-only" : "room-panel-title"}>
+            <h2 id={titleId} className={view === "about" ? "room-panel-title" : "sr-only"}>
               {TITLES[view]}
             </h2>
 
@@ -133,26 +133,9 @@ export default function RoomDialog({ view, origin, about, onClose, onSwap }: Pro
                 <AboutContent paragraphs={about} variant="bubble" />
               </div>
             )}
-            {view === "quick" && (
-              <nav aria-label="Quick links">
-                <p className="room-terminal-prompt" aria-hidden="true">
-                  akid@room:~$ ls
-                </p>
-                <ul className="room-quick-list">
-                  <li>
-                    <Link href="/portfolio#projects" onClick={() => onClose()}>Projects</Link>
-                  </li>
-                  {(["about", "resume", "contact"] as const).map((v) => (
-                    <li key={v}>
-                      <button type="button" onClick={() => onSwap(v)}>
-                        {v === "about" ? "About" : TITLES[v]}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
-            )}
+            {view === "quick" && <QuickTerminal onSwap={onSwap} onClose={onClose} />}
 
+            {/* Last in the DOM so the view's own content is reached first. On the monitor it sits on the red title-bar dot. */}
             <button type="button" className="room-panel-close" aria-label="Close" onClick={() => void requestClose()}>
               <X className="h-5 w-5" aria-hidden />
             </button>

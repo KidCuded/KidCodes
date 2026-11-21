@@ -31,7 +31,8 @@ export function Bush({ layout }: { layout: WallLayout }) {
     return { i, angle, len, lift, dx, back: i % 2 === 0 };
   }).sort((a, b) => Number(b.back) - Number(a.back));
   const flowers: [number, number][] = [
-    [-0.4, -1.25], [0.32, -1.4], [0.0, -1.6], [-0.78, -0.8], [0.72, -0.9],
+    // Tucked in among the leaves (not floating above them)
+    [-0.32, -0.95], [0.26, -1.05], [0.0, -1.2], [-0.55, -0.6], [0.5, -0.66],
   ];
   return (
     <g data-room="plant" aria-hidden="true">

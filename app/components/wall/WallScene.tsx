@@ -19,13 +19,13 @@ function atLeast({ x, y, w, h }: Rect, min: number): Rect {
 }
 const box = (r: Rect) => ({ x: r.x, y: r.y, width: r.w, height: r.h });
 
-type LabelProps = { x: number; y: number; text: string; size: number; intro: boolean; anchor?: "above" | "below" | "center" | "left" };
+type LabelProps = { x: number; y: number; text: string; size: number; intro: boolean; anchor?: "above" | "below" | "center" | "left" | "right" };
 
 function Label({ x, y, text, size, intro, anchor = "above" }: LabelProps) {
   const h = size * 1.75;
   const w = text.length * size * 0.6 + size * 1.3;
   const top = anchor === "above" ? y - h : anchor === "below" ? y : y - h / 2;
-  const cx = anchor === "left" ? x - w / 2 : x;
+  const cx = anchor === "left" ? x - w / 2 : anchor === "right" ? x + w / 2 : x;
   return (
     <g className="room-label" data-intro={intro} aria-hidden="true">
       <rect x={cx - w / 2} y={top} width={w} height={h} rx={h / 2} className="room-label-pill" />
@@ -138,7 +138,7 @@ export default function WallScene({ layout, projects, className }: Props) {
             <Link href="/about" role="button" data-opens="about" aria-label="About Akid" className="room-link" data-target="person">
               <polygon points={stationHits.person.map((p) => p.join(",")).join(" ")} className="room-hit" />
             </Link>
-            <Label x={stationHits.personLabel[0]} y={stationHits.personLabel[1]} text="About me" size={size / st.s} intro anchor="left" />
+            <Label x={stationHits.personLabel[0]} y={stationHits.personLabel[1]} text="About me" size={size / st.s} intro anchor="right" />
             {/* Opens the quick-links view. Without JavaScript it jumps to the corner nav instead. */}
             <a href="#main-nav" role="button" data-opens="quick" aria-label="Quick links" className="room-link" data-target="computer">
               <rect {...box(computer)} className="room-hit" />

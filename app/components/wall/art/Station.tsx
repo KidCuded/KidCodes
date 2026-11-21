@@ -1,9 +1,9 @@
-import type React from "react";
 import { shade } from "../util";
 import { P } from "../palette";
 import { ST } from "../layouts";
 import { ContactShadow } from "./Backdrop";
 import CodeScreen from "./CodeScreen";
+import { Racket, RunningShoes } from "./Sports";
 
 // The workstation, drawn in desktop coordinates (layouts.ts → ST). Each
 // layout places it with its `station` transform.
@@ -19,25 +19,57 @@ export const stationHits = {
     [HEAD.cx + 95, ST.floorY + 15],
     [HEAD.cx - 95, ST.floorY + 15],
   ] as [number, number][],
-  personLabel: [HEAD.cx - HEAD.r - 12, HEAD.cy] as [number, number],
-  computer: { x: SCR.x - 12, y: SCR.y - 22, w: SCR.w + 24, h: TOP - SCR.y + 22 },
-  computerLabel: [SCR.x + SCR.w / 2 + 20, SCR.y + SCR.h / 2] as [number, number],
+  personLabel: [HEAD.cx + HEAD.r + 12, HEAD.cy] as [number, number], // right of the head, away from Quick links
+  // The laptop is the computer (the monitor is behind Akid now)
+  computer: { x: ST.laptop.x0 - 8, y: TOP - 92, w: ST.laptop.x1 - ST.laptop.x0 + 16, h: 98 },
+  computerLabel: [(ST.laptop.x0 + ST.laptop.x1) / 2, TOP - 46] as [number, number],
 };
 
 /* ------------------------------------------------------------------------ */
 
+/** White metal standing-desk frame. */
+const METAL = "#eef0f3";
+const METAL_SHADE = "#cfd4db";
+const METAL_DARK = "#aab2bd";
+
+/** One height-adjustable leg: a T-foot, a wide lower column, and a narrower upper column that slides into it. */
+function DeskLeg({ x }: { x: number }) {
+  const floor = ST.floorY;
+  const joint = 655; // where the upper column enters the lower one
+  return (
+    <g>
+      {/* Upper column (inner stage) */}
+      <rect x={x - 7} y={TOP + 16} width={14} height={joint - TOP - 12} fill={METAL_SHADE} />
+      {/* Lower column (outer stage), lit on the left */}
+      <rect x={x - 10} y={joint} width={20} height={floor - joint - 8} rx={2} fill={METAL} />
+      <rect x={x + 4} y={joint} width={6} height={floor - joint - 8} fill={METAL_SHADE} />
+      <rect x={x - 10} y={joint} width={20} height={3} fill={METAL_DARK} />
+      {/* T-foot with levelling pads */}
+      <rect x={x - 40} y={floor - 10} width={80} height={9} rx={4.5} fill={METAL} />
+      <rect x={x - 40} y={floor - 4} width={80} height={3} rx={1.5} fill={METAL_SHADE} />
+      <rect x={x - 36} y={floor - 1} width={8} height={2} fill={METAL_DARK} />
+      <rect x={x + 28} y={floor - 1} width={8} height={2} fill={METAL_DARK} />
+    </g>
+  );
+}
+
 function Desk() {
+  const legL = desk.x0 + 55;
+  const legR = desk.x1 - 50;
   return (
     <g data-room="desk">
       <ContactShadow cx={(desk.x0 + desk.x1) / 2} cy={ST.floorY + 2} rx={(desk.x1 - desk.x0) / 2 + 10} ry={9} />
-      {/* Legs (side panels) and a back rail */}
-      <rect x={desk.x0 + 12} y={TOP + 40} width={20} height={ST.floorY - TOP - 40} fill={P.woodDark} />
-      <rect x={desk.x1 - 32} y={TOP + 40} width={20} height={ST.floorY - TOP - 40} fill={P.woodDark} />
-      <rect x={desk.x0 + 32} y={TOP + 60} width={desk.x1 - desk.x0 - 64} height={40} fill={shade(P.woodDark, -0.25)} />
-      {/* Top face (seen slightly from above), then the front edge */}
-      <rect x={desk.x0} y={TOP} width={desk.x1 - desk.x0} height={15} fill={shade(P.wood, 0.16)} />
-      <rect x={desk.x0} y={TOP + 15} width={desk.x1 - desk.x0} height={25} fill={P.wood} />
-      <rect x={desk.x0} y={TOP + 36} width={desk.x1 - desk.x0} height={4} fill={shade(P.wood, -0.3)} />
+      {/* Frame: a beam under the top joining the legs, then the legs */}
+      <rect x={legL - 4} y={TOP + 14} width={legR - legL + 8} height={9} rx={2} fill={METAL_SHADE} />
+      <DeskLeg x={legL} />
+      <DeskLeg x={legR} />
+      {/* Height controller under the front edge */}
+      <rect x={desk.x1 - 112} y={TOP + 16} width={30} height={8} rx={2} fill="#374151" />
+      <circle cx={desk.x1 - 102} cy={TOP + 20} r={1.6} fill="#93c5fd" />
+      {/* Thin top with rounded corners: the top face (seen slightly from above), then the front edge */}
+      <rect x={desk.x0} y={TOP} width={desk.x1 - desk.x0} height={16} rx={7} fill={P.wood} />
+      <rect x={desk.x0} y={TOP} width={desk.x1 - desk.x0} height={8} rx={4} fill={shade(P.wood, 0.16)} />
+      <rect x={desk.x0 + 3} y={TOP + 14} width={desk.x1 - desk.x0 - 6} height={2} rx={1} fill={shade(P.wood, -0.3)} />
     </g>
   );
 }
@@ -91,29 +123,132 @@ function Monitor({ id }: { id: string }) {
 }
 
 /** Kopi mug with steam. */
-function Mug() {
-  const { x, w } = ST.mug;
-  const top = TOP - 36;
+/**
+ * The laptop, open on the left of the desk and turned toward Akid: its right
+ * side is further away, so the lid narrows and we see a sliver of its left
+ * edge. The screen (an editor) is drawn through `q`, which maps flat screen
+ * coordinates onto the turned lid. A cable runs along the desk to the monitor.
+ */
+function Laptop() {
+  const { x0, x1 } = ST.laptop;
+  const lidTop = TOP - 86;
+  // The lid's corners: the right edge is further away, so it's shorter.
+  const L = x0 + 6;
+  const R = x1 - 16;
+  const TL: [number, number] = [L, lidTop];
+  const TR: [number, number] = [R, lidTop + 6];
+  const BR: [number, number] = [R, TOP - 8];
+  const BL: [number, number] = [L, TOP - 5];
+  const lerp = (a: [number, number], b: [number, number], t: number): [number, number] => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+  /** A point on the lid, from u (0 left → 1 right) and v (0 top → 1 bottom). */
+  const q = (u: number, v: number) => lerp(lerp(TL, TR, u), lerp(BL, BR, u), v);
+  /** A rectangle on the lid, given in lid units. */
+  const quad = (u0: number, v0: number, u1: number, v1: number) =>
+    [q(u0, v0), q(u1, v0), q(u1, v1), q(u0, v1)].map((p) => p.map((n) => n.toFixed(2)).join(",")).join(" ");
+  // The screen area inside the bezel, and a helper to place things on it.
+  const S = { u0: 0.055, v0: 0.075, u1: 0.945, v1: 0.93 };
+  const sq = (u0: number, v0: number, u1: number, v1: number) =>
+    quad(S.u0 + (S.u1 - S.u0) * u0, S.v0 + (S.v1 - S.v0) * v0, S.u0 + (S.u1 - S.u0) * u1, S.v0 + (S.v1 - S.v0) * v1);
+  const sp = (u: number, v: number) => q(S.u0 + (S.u1 - S.u0) * u, S.v0 + (S.v1 - S.v0) * v);
+
+  // Editor lines: [indent, [width, colour]...] in screen units
+  const code: [number, [number, string][]][] = [
+    [0, [[0.14, "#ff7b72"], [0.2, "#d2a8ff"], [0.08, "#c9d1d9"]]],
+    [1, [[0.1, "#ff7b72"], [0.16, "#79c0ff"], [0.12, "#a5d6ff"]]],
+    [1, [[0.18, "#c9d1d9"], [0.1, "#ffa657"]]],
+    [2, [[0.08, "#ff7b72"], [0.22, "#a5d6ff"]]],
+    [1, [[0.06, "#c9d1d9"]]],
+    [0, [[0.04, "#c9d1d9"]]],
+    [0, [[0.12, "#8b949e"], [0.18, "#8b949e"]]],
+  ];
+  const monitorFoot = SCR.x + SCR.w / 2 - 48;
   return (
-    <g data-room="mug" aria-hidden="true">
-      <ContactShadow cx={x + w / 2} cy={TOP + 1} rx={w * 0.7} ry={3.5} />
-      <path d={`M${x + w - 2} ${top + 8} q14 2 10 16 q-3 8 -10 4`} fill="none" stroke="#d9dde5" strokeWidth={4} />
-      <rect x={x} y={top} width={w} height={36} rx={5} fill="#eceef2" />
-      <rect x={x} y={top + 15} width={w} height={6} fill="#c2453d" opacity={0.85} />
-      <ellipse cx={x + w / 2} cy={top} rx={w / 2} ry={4} fill="#f7f8fa" />
-      <ellipse cx={x + w / 2} cy={top} rx={w / 2 - 3} ry={2.6} fill="#6b4a33" />
-      {[-6, 6].map((dx, i) => (
-        <path
-          key={dx}
-          className="steam"
-          style={{ "--i": i } as React.CSSProperties}
-          d={`M${x + w / 2 + dx} ${top - 4} q-5 -9 0 -17 q5 -8 0 -16`}
-          fill="none"
-          stroke="#ffffff"
-          strokeWidth={2}
-          strokeLinecap="round"
-        />
+    <g data-room="laptop" aria-hidden="true">
+      {/* The base turns with the lid: the deck runs out from the hinge toward
+          Akid (right, and nearer to us), so it's a parallelogram on the desk. */}
+      {(() => {
+        const dx = 30; // how far the deck reaches toward Akid
+        const dy = 5; // ...and toward us
+        const hl: [number, number] = [L, TOP - 5]; // hinge, left end
+        const hr: [number, number] = [R, TOP - 8]; // hinge, right end (further away)
+        const fl: [number, number] = [L + dx, TOP - 5 + dy]; // front edge, left
+        const fr: [number, number] = [R + dx, TOP - 8 + dy]; // front edge, right
+        const pt = (...ps: [number, number][]) => ps.map((p) => p.join(",")).join(" ");
+        const mix = (a: [number, number], b: [number, number], t: number): [number, number] => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+        // A patch of the deck: u along the hinge (0 left → 1 right), w from the hinge (0) to the front (1)
+        const at = (u: number, w: number) => mix(mix(hl, hr, u), mix(fl, fr, u), w);
+        const patch = (u0: number, w0: number, u1: number, w1: number) => pt(at(u0, w0), at(u1, w0), at(u1, w1), at(u0, w1));
+        const thick = 2.5;
+        return (
+          <>
+            {/* Cable from the base's right side, along the desk, to the monitor */}
+            <path d={`M${fr[0] - 2} ${fr[1] - 1} C${fr[0] + 30} ${TOP} ${monitorFoot - 30} ${TOP - 1} ${monitorFoot + 6} ${TOP - 6}`} fill="none" stroke="#2b313c" strokeWidth={2.2} strokeLinecap="round" />
+            <ContactShadow cx={(L + fr[0]) / 2 + 6} cy={TOP + 1} rx={(fr[0] - L) / 2 + 10} ry={3.5} />
+            {/* Left side (with ports), then the front edge's thickness, then the top */}
+            <polygon points={pt(hl, fl, [fl[0], fl[1] + thick], [hl[0], hl[1] + thick])} fill="#9aa2ad" />
+            {[0.3, 0.55].map((t) => {
+              const a = mix(hl, fl, t);
+              const b = mix(hl, fl, t + 0.15);
+              return <polygon key={t} points={pt([a[0], a[1] + 0.6], [b[0], b[1] + 0.6], [b[0], b[1] + 1.8], [a[0], a[1] + 1.8])} fill="#2b313c" />;
+            })}
+            <polygon points={pt(fl, fr, [fr[0], fr[1] + thick], [fl[0], fl[1] + thick])} fill="#aab1bb" />
+            <polygon points={pt(hl, hr, fr, fl)} fill="#dfe3e8" />
+            {/* Keyboard well and trackpad */}
+            <polygon points={patch(0.08, 0.12, 0.92, 0.52)} fill="#2b313c" opacity={0.85} />
+            {[0.22, 0.34, 0.46].map((w) => (
+              <polygon key={w} points={patch(0.1, w - 0.04, 0.9, w)} fill="#4b5563" />
+            ))}
+            <polygon points={patch(0.36, 0.62, 0.64, 0.92)} fill="#cbd0d7" />
+            <circle cx={at(0.95, 0.85)[0]} cy={at(0.95, 0.85)[1]} r={0.8} fill="#34d399" />
+            {/* Hinge */}
+            <polygon points={patch(0.04, 0, 0.96, 0.08)} fill="#8e96a2" />
+          </>
+        );
+      })()}
+
+      {/* Lid: the left edge's thickness, the aluminium shell, the black bezel */}
+      <polygon points={`${L - 3.5},${lidTop + 1.5} ${L},${lidTop} ${L},${TOP - 5} ${L - 3.5},${TOP - 3.5}`} fill="#a9b0ba" />
+      <polygon points={quad(0, 0, 1, 1)} fill="#c9ced6" />
+      <polygon points={quad(0.025, 0.025, 0.975, 0.975)} fill="#14171c" />
+      <circle cx={q(0.5, 0.04)[0]} cy={q(0.5, 0.04)[1]} r={1} fill="#3a404a" />
+
+      {/* Screen: an editor window */}
+      <polygon className="laptop-screen" points={sq(0, 0, 1, 1)} fill="#0d1117" />
+      {/* title bar with window buttons */}
+      <polygon points={sq(0, 0, 1, 0.1)} fill="#1c2128" />
+      {["#ff5f57", "#febc2e", "#28c840"].map((c, k) => {
+        const [px, py] = sp(0.05 + k * 0.045, 0.05);
+        return <circle key={c} cx={px} cy={py} r={1.3} fill={c} />;
+      })}
+      {/* file tree */}
+      <polygon points={sq(0, 0.1, 0.22, 0.92)} fill="#161b22" />
+      {[0.18, 0.28, 0.38, 0.48, 0.58].map((v, k) => (
+        <polygon key={v} points={sq(k === 2 ? 0.02 : 0.04, v, k === 1 ? 0.18 : 0.15, v + 0.045)} fill={k === 2 ? "#388bfd" : "#6e7681"} opacity={k === 2 ? 0.9 : 0.7} />
       ))}
+      {/* tabs: the open file is lit */}
+      <polygon points={sq(0.22, 0.1, 1, 0.19)} fill="#161b22" />
+      <polygon points={sq(0.22, 0.1, 0.46, 0.19)} fill="#0d1117" />
+      <polygon points={sq(0.22, 0.1, 0.46, 0.115)} fill="#f78166" />
+      {/* code, with line numbers */}
+      {code.map(([indent, tokens], row) => {
+        const v = 0.25 + row * 0.085;
+        let u = 0.31 + indent * 0.05;
+        return (
+          <g key={row}>
+            <polygon points={sq(0.25, v, 0.28, v + 0.04)} fill="#484f58" />
+            {tokens.map(([w, c], t) => {
+              const el = <polygon key={t} points={sq(u, v, u + w, v + 0.04)} fill={c} />;
+              u += w + 0.02;
+              return el;
+            })}
+          </g>
+        );
+      })}
+      {/* cursor and status bar */}
+      <polygon points={sq(0.36, 0.765, 0.375, 0.815)} fill="#c9d1d9" />
+      <polygon points={sq(0, 0.92, 1, 1)} fill="#1f6feb" />
+      {/* glass reflection */}
+      <polygon points={`${sp(0.55, 0)} ${sp(0.8, 0)} ${sp(0.45, 1)} ${sp(0.2, 1)}`} fill="#ffffff" opacity={0.05} />
     </g>
   );
 }
@@ -124,7 +259,6 @@ function DeskThings() {
   const d = ST.duck.cx;
   const ph = ST.phone;
   const mx = m.x + m.w / 2;
-  const u = 60;
   return (
     <g>
       {/* Keyboard: top face with three rows of keys, then the front edge */}
@@ -160,15 +294,20 @@ function DeskThings() {
       <polygon points={`${ph.x0 + 10},${TOP - 4.5} ${ph.x0 + 24},${TOP - 4.5} ${ph.x0 + 25},${TOP - 3} ${ph.x0 + 9},${TOP - 3}`} fill="#ffffff" opacity={0.45} />
       <polygon points={`${ph.x1 - 16},${TOP - 9} ${ph.x1 - 8},${TOP - 9} ${ph.x1 - 13},${TOP - 2} ${ph.x1 - 21},${TOP - 2}`} fill="#ffffff" opacity={0.14} />
       <line x1={ph.x0 + 6} y1={TOP - 10} x2={ph.x1 - 4} y2={TOP - 10} stroke="#4b5567" strokeWidth={1} />
-      {/* Rubber duck (wobbles on hover) */}
+      {/* Claude Code's pixel mascot (wobbles on hover): a wide orange body,
+          two tall eyes, stubby arms and four little legs, all on a pixel grid */}
       <g data-room="duck" aria-hidden="true">
         <g data-part="duck-body">
-          <ellipse cx={d} cy={TOP - 1} rx={u * 0.26} ry={u * 0.05} fill="#000" opacity={0.2} />
-          <ellipse cx={d} cy={TOP - u * 0.12} rx={u * 0.24} ry={u * 0.13} fill="#f7c948" />
-          <circle cx={d + u * 0.1} cy={TOP - u * 0.31} r={u * 0.12} fill="#f7c948" />
-          <path d={`M${d + u * 0.2} ${TOP - u * 0.31} l${u * 0.12} ${u * 0.02} l${-u * 0.11} ${u * 0.05} Z`} fill="#f08a24" />
-          <circle cx={d + u * 0.14} cy={TOP - u * 0.34} r={u * 0.02} fill="#1b2235" />
-          <path d={`M${d - u * 0.13} ${TOP - u * 0.16} q${u * 0.1} ${-u * 0.08} ${u * 0.19} 0`} fill="none" stroke="#e0ad2a" strokeWidth={u * 0.03} />
+          <ellipse cx={d} cy={TOP - 0.5} rx={17} ry={2.2} fill="#000" opacity={0.25} />
+          {[-11.7, -6.5, 3.9, 9.1].map((lx) => (
+            <rect key={lx} x={d + lx} y={TOP - 7} width={2.6} height={6.5} fill="#c4664a" />
+          ))}
+          <rect x={d - 13} y={TOP - 21} width={26} height={14.5} fill="#d97757" />
+          <rect x={d - 17} y={TOP - 15.8} width={4} height={4} fill="#d97757" />
+          <rect x={d + 13} y={TOP - 15.8} width={4} height={4} fill="#d97757" />
+          <rect x={d - 13} y={TOP - 21} width={26} height={2} fill="#e8957a" />
+          <rect x={d - 7.8} y={TOP - 18.4} width={2.6} height={5.2} fill="#1b1410" />
+          <rect x={d + 5.2} y={TOP - 18.4} width={2.6} height={5.2} fill="#1b1410" />
         </g>
       </g>
     </g>
@@ -257,6 +396,15 @@ export function Person() {
 
   return (
     <g data-room="person">
+      {/* Akid's legs, seen from behind under the seat: dark trousers and white
+          sneakers, going forward under the desk (the chair is drawn over them) */}
+      {[-1, 1].map((sd) => (
+        <g key={sd}>
+          {arm([[cx + sd * 34, 672], [cx + sd * 40, 728], [cx + sd * 44, 764]], "#2b3548", 26)}
+          <rect x={cx + sd * 44 - 15} y={760} width={30} height={13} rx={6} fill="#f4f5f7" />
+          <rect x={cx + sd * 44 - 15} y={769} width={30} height={4} rx={2} fill="#c9ced6" />
+        </g>
+      ))}
       {/* Chair base: wheels, legs and gas post */}
       <ContactShadow cx={cx + 2} cy={ST.floorY + 12} rx={100} ry={10} />
       {[
@@ -271,12 +419,16 @@ export function Person() {
           <circle cx={fx} cy={fy + 5} r={7} fill="#141820" />
         </g>
       ))}
-      <rect x={cx - 6} y={705} width={12} height={59} fill={P.metal} />
-      <rect x={cx - 9} y={705} width={18} height={28} fill="#2a3140" />
-      <rect x={cx - 74} y={690} width={148} height={26} rx={12} fill={shade(P.chair, -0.15)} />
+      {/* Seat raised: a longer gas post, the seat and backrest higher (Akid stays put) */}
+      <rect x={cx - 6} y={677} width={12} height={87} fill={P.metal} />
+      <rect x={cx - 9} y={677} width={18} height={34} fill="#2a3140" />
+      <rect x={cx - 74} y={662} width={148} height={26} rx={12} fill={shade(P.chair, -0.15)} />
 
-      {/* Left forearm, reaching to the keyboard (mostly behind the body) */}
+      {/* Forearms and hands reach forward to the keyboard, so from behind they
+          go behind the body (drawn before the jersey); only the upper arms show */}
       {arm([[cx - 76, 580], [ST.keyboard.x0 + 40, TOP - 6]], skin, 20)}
+      {arm([[cx + 80, 580], hand], skin, 20)}
+      <ellipse cx={hand[0] + 2} cy={hand[1]} rx={12} ry={8.5} fill={shade(skin, -0.06)} />
 
       {/* Jersey */}
       <g data-part="torso">
@@ -284,10 +436,10 @@ export function Person() {
         <path d={`M${cx - wa} ${yH} L${cx - sh} 505 Q${cx - sh} ${yS + 2} ${cx - 36} ${yS} L${cx - 30} ${yS} Q${cx - 52} ${yS + 6} ${cx - 52} 505 L${cx - wa + 10} ${yH} Z`} fill={shade(JERSEY, -0.18)} />
         <path d={`M${cx - sh + 3} 512 L${cx - wa + 3} ${yH}`} stroke={TRIM} strokeWidth={4} />
         <path d={`M${cx + sh - 3} 512 L${cx + wa - 3} ${yH}`} stroke={TRIM} strokeWidth={4} />
-        <text x={cx} y={505} fontSize={15} fontWeight={800} letterSpacing={2.5} textAnchor="middle" fill={TRIM}>
+        <text x={cx} y={497} fontSize={15} fontWeight={800} letterSpacing={2.5} textAnchor="middle" fill={TRIM}>
           {"Kid"}
         </text>
-        <text x={cx} y={545} fontSize={36} fontWeight={900} textAnchor="middle" fill={TRIM} stroke={shade(JERSEY, -0.35)} strokeWidth={1.5} paintOrder="stroke">
+        <text x={cx} y={535} fontSize={36} fontWeight={900} textAnchor="middle" fill={TRIM} stroke={shade(JERSEY, -0.35)} strokeWidth={1.5} paintOrder="stroke">
           10
         </text>
         {/* Collar: a white rib around the neck */}
@@ -302,8 +454,7 @@ export function Person() {
       {arm([[cx - 71, 515], [cx - 76, 580]], skin, 21)}
       {sleeve(-1)}
       {arm([[cx - 69.2, 514], [cx - 71, 520]], TRIM, 35, "butt")}
-      {arm([[cx + 71, 515], [cx + 80, 580], hand], skin, 21)}
-      <ellipse cx={hand[0] + 2} cy={hand[1]} rx={12} ry={8.5} fill={shade(skin, -0.06)} />
+      {arm([[cx + 71, 515], [cx + 80, 580]], skin, 21)}
       {sleeve(1)}
       {arm([[cx + 69.2, 514], [cx + 71, 520]], TRIM, 35, "butt")}
 
@@ -328,11 +479,11 @@ export function Person() {
       </g>
 
       {/* Chair back, nearest the viewer */}
-      <rect x={cx - 6} y={695} width={12} height={20} fill="#3b4456" />
-      <rect x={cx - 60} y={566} width={120} height={140} rx={24} fill={P.chair} />
-      <rect x={cx - 60} y={566} width={120} height={10} rx={5} fill={shade(P.chair, 0.12)} />
-      <rect x={cx - 50} y={580} width={100} height={116} rx={18} fill="none" stroke={shade(P.chair, 0.14)} strokeWidth={2.5} />
-      <path d={`M${cx - 48} 640 Q${cx} 649 ${cx + 48} 640`} fill="none" stroke={shade(P.chair, -0.18)} strokeWidth={2.5} />
+      <rect x={cx - 6} y={667} width={12} height={20} fill="#3b4456" />
+      <rect x={cx - 60} y={548} width={120} height={130} rx={24} fill={P.chair} />
+      <rect x={cx - 60} y={548} width={120} height={10} rx={5} fill={shade(P.chair, 0.12)} />
+      <rect x={cx - 50} y={562} width={100} height={106} rx={18} fill="none" stroke={shade(P.chair, 0.14)} strokeWidth={2.5} />
+      <path d={`M${cx - 48} 618 Q${cx} 627 ${cx + 48} 618`} fill="none" stroke={shade(P.chair, -0.18)} strokeWidth={2.5} />
     </g>
   );
 }
@@ -357,9 +508,11 @@ export default function Station({ id }: { id: string }) {
   return (
     <g>
       <Desk />
+      <RunningShoes />
+      <Racket id={id} />
       <Bin />
       <Monitor id={id} />
-      <Mug />
+      <Laptop />
       <DeskThings />
     </g>
   );

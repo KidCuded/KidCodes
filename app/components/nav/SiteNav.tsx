@@ -20,12 +20,22 @@ type Props = {
 
 export default function SiteNav({ variant }: Props) {
   if (variant === "corner") {
+    // The room: the same floating glass bar as the one-page site, with Resume
+    // and the day/night switch. Its tint follows the room's theme (.room-glass).
     return (
-      <nav id="main-nav" tabIndex={-1} aria-label="Main" className="absolute right-4 top-4 z-20 flex items-center gap-3 rounded-lg bg-room-wall/80 py-1 pl-4 pr-1.5 backdrop-blur-sm sm:right-6 sm:top-5">
-        <ul className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm sm:text-base">
+      <nav
+        id="main-nav"
+        tabIndex={-1}
+        aria-label="Main"
+        className="glass-nav room-glass absolute inset-x-3 top-3 z-20 mx-auto flex max-w-6xl items-center gap-3 py-1.5 pl-4 pr-1.5 sm:inset-x-5 sm:top-4 sm:gap-6 sm:py-2 sm:pl-5 sm:pr-2"
+      >
+        <Link href="/" className="hidden font-display text-xl font-extrabold tracking-tight text-ink min-[420px]:block sm:text-2xl">
+          akid
+        </Link>
+        <ul className="ml-auto flex items-center gap-x-3.5 text-sm font-semibold min-[420px]:gap-x-4 sm:gap-x-5 sm:text-[0.95rem]">
           {NAV_ITEMS.map((item) => (
             <li key={item.section}>
-              <Link href={item.roomHref} data-opens={item.opens} className="py-2 text-ink transition-colors hover:text-accent">
+              <Link href={item.roomHref} data-opens={item.opens} className="nav-link text-ink">
                 {item.label}
               </Link>
             </li>

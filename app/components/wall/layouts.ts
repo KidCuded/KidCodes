@@ -79,15 +79,15 @@ export const ST = {
   floorY: 780,
   desk: { x0: 680, x1: 1240, top: 545 },
   screen: { x: 860, y: 360, w: 220, h: 140 },
-  head: { cx: 815, cy: 416, r: 42 },
-  mug: { x: 692, w: 34 },
-  keyboard: { x0: 790, x1: 940 },
-  mouse: { x: 1003, w: 28 },
-  duck: { cx: 1078 },
-  phone: { x0: 1118, x1: 1176 },
+  head: { cx: 900, cy: 416, r: 42 }, // Akid sits in front of the monitor, a little left of its centre
+  laptop: { x0: 690, x1: 820 }, // the computer: wired to the monitor, opens Quick links
+  keyboard: { x0: 835, x1: 975 },
+  mouse: { x: 1004, w: 28 },
+  duck: { cx: 1140 }, // the Claude mascot (kept as "duck" for the hover CSS)
+  phone: { x0: 1172, x1: 1230 },
   lamp: { baseX: 1216, shadeX: 1140 },
-  bin: { x: 1150, w: 60 },
-  bubble: { x: 600, y: 250, w: 190, h: 120 },
+  bin: { x: 1078, w: 60 },
+  bubble: { x: 690, y: 250, w: 190, h: 120 },
 } as const;
 
 /** Map a desktop-station point into a layout's viewBox. */

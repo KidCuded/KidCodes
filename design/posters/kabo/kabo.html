@@ -1,0 +1,83 @@
+<!doctype html>
+<!--
+  KABO poster for the project card. 1600×1000, rendered at 2x by ../render.mjs:
+    node design/posters/render.mjs design/posters/kabo/kabo.html public/images/projects/kabo-poster-v2.webp
+  Images in this folder: logo.png, hero.webp (landing page), analytics.png (dashboard), phone.png (wallet pass).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>KABO poster</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@600;800&family=Plus+Jakarta+Sans:wght@600&display=block" rel="stylesheet" />
+<style>
+  :root { --sky: #7ccbfa; --pink: #e6006e; --navy: #0b2545; --muted: #4a6480; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1600px; height: 1000px; }
+  body {
+    position: relative; overflow: hidden; background: #f7fbff;
+    font-family: "Plus Jakarta Sans", sans-serif; color: var(--navy);
+  }
+
+  /* Backdrop: sky glow top right, a touch of pink bottom left, dot grid behind the words */
+  .glow { position: absolute; border-radius: 50%; filter: blur(110px); }
+  .glow.sky { width: 1100px; height: 900px; right: -260px; top: -380px; background: var(--sky); opacity: .55; }
+  .glow.pink { width: 700px; height: 600px; left: -260px; bottom: -330px; background: var(--pink); opacity: .16; }
+  .grid {
+    position: absolute; inset: 0;
+    background: radial-gradient(rgb(11 37 69 / .1) 1.2px, transparent 1.6px) 0 0 / 26px 26px;
+    -webkit-mask-image: linear-gradient(90deg, #000 40%, transparent 70%);
+  }
+
+  /* Words */
+  .copy { position: absolute; left: 96px; top: 118px; width: 600px; }
+  .kicker { display: flex; align-items: center; gap: 16px; font-weight: 600; font-size: 24px; color: var(--muted); }
+  .kicker img { width: 64px; height: 64px; }
+  h1 { margin-top: 34px; font: 800 220px/.8 Geist, sans-serif; letter-spacing: -0.06em; }
+  .pitch { margin-top: 46px; max-width: 540px; font: 600 44px/1.12 Geist, sans-serif; letter-spacing: -0.025em; }
+  .pitch em { font-style: normal; color: var(--pink); }
+  .tags { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 12px; max-width: 520px; }
+  .tags span { padding: 10px 20px; border-radius: 999px; background: #fff; border: 2px solid rgb(11 37 69 / .1); font-weight: 600; font-size: 21px; }
+
+  /* Landing page in a browser window, running off the right edge */
+  .browser {
+    position: absolute; left: 760px; top: 138px; width: 1060px; overflow: hidden;
+    border-radius: 22px; background: #fff;
+    box-shadow: 0 40px 90px rgb(11 37 69 / .18), 0 0 0 1px rgb(11 37 69 / .06);
+  }
+  .bar { display: flex; align-items: center; gap: 10px; height: 56px; padding: 0 22px; background: #f2f7fc; }
+  .bar i { width: 14px; height: 14px; border-radius: 50%; background: #d5dfea; }
+  .bar i:first-child { background: var(--pink); }
+  .bar span { margin-left: 18px; padding: 6px 18px; border-radius: 999px; background: #fff; font-weight: 600; font-size: 18px; color: var(--muted); }
+  .browser img { display: block; width: 100%; }
+
+  /* Dashboard: just the stat cards */
+  .stats {
+    position: absolute; left: 1000px; top: 700px; width: 700px; height: 168px; border-radius: 22px;
+    background: #f8fafc url(analytics.png) -190px -10px / 1090px auto no-repeat;
+    box-shadow: 0 30px 70px rgb(11 37 69 / .2), 0 0 0 1px rgb(11 37 69 / .06);
+  }
+
+  /* Wallet pass on a phone (transparent PNG; the shadow follows its outline) */
+  .phone { position: absolute; left: 640px; top: 520px; width: 400px; filter: drop-shadow(0 30px 50px rgb(11 37 69 / .22)); }
+</style>
+</head>
+<body>
+  <div class="glow sky"></div>
+  <div class="glow pink"></div>
+  <div class="grid"></div>
+
+  <div class="copy">
+    <p class="kicker"><img src="logo.png" alt="" />Digital loyalty platform</p>
+    <h1>KABO</h1>
+    <p class="pitch">Stamp cards that live in your customers' <em>wallets</em>.</p>
+    <div class="tags"><span>Next.js</span><span>React</span><span>Tailwind CSS</span><span>Supabase</span><span>Vercel</span></div>
+  </div>
+
+  <div class="browser">
+    <div class="bar"><i></i><i></i><i></i><span>kabo</span></div>
+    <img src="hero.webp" alt="" />
+  </div>
+  <div class="stats"></div>
+  <img class="phone" src="phone.png" alt="" />
+</body>
+</html>

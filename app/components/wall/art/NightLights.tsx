@@ -146,7 +146,7 @@ export function PersonLights({ id }: { id: string }) {
               <path d={`M${cx + r * 0.55} ${cy - r * 0.95} Q${cx + r * 1.15} ${cy - r * 0.5} ${cx + r * 1.05} ${cy + r * 0.2}`} stroke={BLUE} strokeWidth={2.5} opacity={0.3} />
             </g>
             <g data-part="torso">
-              <path d={`M${cx + 10} 468 L${cx + 36} 468 Q${cx + 62} 471 ${cx + 62} 475`} stroke={BLUE} strokeWidth={3} opacity={0.5 * k} />
+              <path d={`M${cx + 15} 468 L${cx + 39} 468 Q${cx + 62} 471 ${cx + 62} 475`} stroke={BLUE} strokeWidth={3} opacity={0.5 * k} />
               <path d={`M${cx + 74} 478 L${cx + 85} 512`} stroke={BLUE} strokeWidth={3} opacity={0.4} />
               <path d={`M${cx + 82} 526 L${cx + 89} 574`} stroke={BLUE} strokeWidth={2.5} opacity={0.35} />
             </g>

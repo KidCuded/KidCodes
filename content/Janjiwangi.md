@@ -4,7 +4,7 @@ title: "Janjiwangi: Shopify Store for a Fragrance Retailer"
 date: "2026-10-01"
 description: "A playful orange-and-white Shopify store for a Malaysian fragrance retailer, with a heavily customised theme, custom product sections and metafield-driven fragrance details."
 liveUrl: "https://janjiwangi.myshopify.com/"
-image: "/images/projects/Janjiwangi.webp"
+image: "/images/projects/janjiwangi-poster.webp"
 tags: ["Shopify", "Liquid", "GraphQL", "JavaScript"]
 ---
 

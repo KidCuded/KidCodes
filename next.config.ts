@@ -34,7 +34,7 @@ const nextConfig: NextConfig = {
       // Contact open in-room views; these are their no-JavaScript fallbacks.)
       { source: "/about", destination: "/portfolio#about", permanent: false },
       { source: "/projects", destination: "/portfolio#projects", permanent: false },
-      { source: "/resume", destination: "/portfolio#resume", permanent: false },
+      { source: "/resume", destination: "/resume.pdf", permanent: false },
       { source: "/contact", destination: "/portfolio#contact", permanent: false },
     ];
   },

@@ -19,7 +19,7 @@ export default function ResumeView() {
         <a
           href="/resume.pdf"
           download="Akid_Resume.pdf"
-          className="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-3 font-semibold text-room-wall transition-colors hover:bg-white"
+          className="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-3 font-semibold text-room-wall transition-opacity hover:opacity-90"
         >
           <Download className="h-5 w-5" aria-hidden />
           Download PDF

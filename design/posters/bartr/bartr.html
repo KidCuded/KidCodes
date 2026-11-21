@@ -1,0 +1,84 @@
+<!doctype html>
+<!--
+  Bartr poster for the project card. 1600×1000, rendered at 2x by ../render.mjs:
+    node design/posters/render.mjs design/posters/bartr/bartr.html public/images/projects/bartr-poster.webp
+  Images in this folder: browse.webp (home feed, signed in), item.webp (a listing), seller.webp (seller card).
+  Same layout as the KABO poster, in Bartr's own pink.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Bartr poster</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@600;800&family=Plus+Jakarta+Sans:wght@600&display=block" rel="stylesheet" />
+<style>
+  :root { --pink: #e0496c; --rose: #ffb3c4; --ink: #241a1d; --muted: #6f5a60; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1600px; height: 1000px; }
+  body {
+    position: relative; overflow: hidden; background: #fffafb;
+    font-family: "Plus Jakarta Sans", sans-serif; color: var(--ink);
+  }
+
+  /* Backdrop: pink glow top right, a rose blush bottom left, dot grid behind the words */
+  .glow { position: absolute; border-radius: 50%; filter: blur(110px); }
+  .glow.pink { width: 1100px; height: 900px; right: -260px; top: -380px; background: var(--pink); opacity: .3; }
+  .glow.rose { width: 700px; height: 600px; left: -260px; bottom: -330px; background: var(--rose); opacity: .5; }
+  .grid {
+    position: absolute; inset: 0;
+    background: radial-gradient(rgb(36 26 29 / .1) 1.2px, transparent 1.6px) 0 0 / 26px 26px;
+    -webkit-mask-image: linear-gradient(90deg, #000 40%, transparent 70%);
+  }
+
+  /* Words */
+  .copy { position: absolute; left: 96px; top: 118px; width: 620px; }
+  .kicker { display: flex; align-items: center; gap: 18px; font-weight: 600; font-size: 24px; color: var(--muted); }
+  .kicker b { display: grid; place-items: center; width: 60px; height: 60px; border-radius: 16px; background: var(--pink); }
+  h1 { margin-top: 34px; font: 800 220px/.8 Geist, sans-serif; letter-spacing: -0.06em; }
+  .pitch { margin-top: 46px; max-width: 540px; font: 600 44px/1.12 Geist, sans-serif; letter-spacing: -0.025em; }
+  .pitch em { font-style: normal; color: var(--pink); }
+  .tags { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 12px; max-width: 520px; }
+  .tags span { padding: 10px 20px; border-radius: 999px; background: #fff; border: 2px solid rgb(36 26 29 / .1); font-weight: 600; font-size: 21px; }
+
+  /* Home feed in a browser window, running off the right edge */
+  .browser {
+    position: absolute; left: 760px; top: 120px; width: 1060px; overflow: hidden;
+    border-radius: 22px; background: #fff;
+    box-shadow: 0 40px 90px rgb(36 26 29 / .18), 0 0 0 1px rgb(36 26 29 / .06);
+  }
+  .bar { display: flex; align-items: center; gap: 10px; height: 56px; padding: 0 22px; background: #fbf2f4; }
+  .bar i { width: 14px; height: 14px; border-radius: 50%; background: #ecd8dd; }
+  .bar i:first-child { background: var(--pink); }
+  .bar span { margin-left: 18px; padding: 6px 18px; border-radius: 999px; background: #fff; font-weight: 600; font-size: 18px; color: var(--muted); }
+  .browser img { display: block; width: 100%; }
+
+  .card {
+    position: absolute; overflow: hidden; border-radius: 20px; background: #fff;
+    box-shadow: 0 30px 70px rgb(36 26 29 / .22), 0 0 0 1px rgb(36 26 29 / .06);
+  }
+  .card img { display: block; width: 100%; }
+  /* A listing: photos, name and price */
+  .item { left: 1000px; top: 610px; width: 640px; }
+  /* The seller, with Propose Trade */
+  .seller { left: 640px; top: 600px; width: 330px; transform: rotate(-3deg); }
+</style>
+</head>
+<body>
+  <div class="glow pink"></div>
+  <div class="glow rose"></div>
+  <div class="grid"></div>
+
+  <div class="copy">
+    <p class="kicker"><b><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14l-4-4M20 16H6l4 4"/></svg></b>Item trading platform</p>
+    <h1>Bartr</h1>
+    <p class="pitch"><em>Swap</em> the things you don't need for the things you do.</p>
+    <div class="tags"><span>Python</span><span>Flask</span><span>SQLAlchemy</span><span>MySQL</span></div>
+  </div>
+
+  <div class="browser">
+    <div class="bar"><i></i><i></i><i></i><span>bartr</span></div>
+    <img src="browse.webp" alt="" />
+  </div>
+  <div class="card item"><img src="item.webp" alt="" /></div>
+  <div class="card seller"><img src="seller.webp" alt="" /></div>
+</body>
+</html>

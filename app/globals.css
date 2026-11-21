@@ -54,6 +54,7 @@
   --color-ink: var(--ink);
   --color-ink-muted: var(--ink-muted);
   --font-sans: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-plus-jakarta-sans), ui-sans-serif, sans-serif;
 }
 
 html {
@@ -554,4 +555,164 @@ body {
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
 }
-.page-section { scroll-margin-top: 4.5rem; }
+/* Sections land just below the floating nav; the hero fills the screen, so it lands at the top. */
+.page-section { scroll-margin-top: 6rem; }
+#about.page-section { scroll-margin-top: 0; }
+
+
+/* The one-page site's nav: a floating bar of frosted glass, 30% white */
+.glass-nav {
+  border-radius: 1.25rem;
+  background: rgb(255 255 255 / 0.3);
+  box-shadow: 0 8px 32px rgb(11 37 69 / 0.12);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  backdrop-filter: blur(16px) saturate(1.5);
+}
+
+/* ---------------------------------------------------------------------------
+   One-page site (/portfolio) and project pages: sky blue, white, hot pink.
+   Scoped to .simple-site so the room keeps its own palette. The shared
+   content components use the room tokens (--ink, --accent…), which are
+   remapped here.
+   --------------------------------------------------------------------------- */
+/* The sky / white / pink tokens. Shared by the one-page site and the room's
+   resume and contact views, so they look the same in both places. */
+.simple-site,
+.room-panel-resume,
+.room-panel-contact {
+  --sky: #7ccbfa;
+  --mist: #e9f6ff;
+  --line: #cfe9fb;
+  --pink: #e6006e;
+  --navy: #0b2545;
+  --muted: #4a6480;
+  /* Room tokens, remapped for the light theme */
+  --room-wall: #ffffff;
+  --room-floor: #ffffff;
+  --accent: var(--pink);
+  --ink: var(--navy);
+  --ink-muted: var(--muted);
+}
+.simple-site {
+  min-height: 100vh;
+  background: #fff;
+  color: var(--navy);
+}
+body:has(.simple-site) { background: #fff; }
+
+.simple-site .section-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--navy);
+}
+
+/* Nav links: navy, with a pink underline that grows on hover */
+.simple-site .nav-link {
+  position: relative;
+  display: inline-block;
+  padding: 0.4rem 0;
+  color: var(--navy);
+}
+.simple-site .nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 100%;
+  bottom: 0.15rem;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--pink);
+  transition: right 0.2s ease;
+}
+.simple-site .nav-link:hover::after { right: 0; }
+
+/* Buttons */
+.simple-site .btn-pink,
+.simple-site .btn-white {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  padding: 0.85rem 1.5rem;
+  font-weight: 700;
+  border: 2px solid var(--navy);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.simple-site .btn-pink { background: var(--pink); color: #fff; border-color: var(--pink); }
+.simple-site .btn-white { background: #fff; color: var(--navy); }
+.simple-site .btn-pink:hover,
+.simple-site .btn-white:hover { transform: translateY(-2px); box-shadow: 0 4px 0 var(--navy); }
+
+/* Hero photo: an arched window with a thick white frame, and a pink sticker */
+.simple-site .arch-window {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border: 12px solid #fff;
+  border-radius: 999px 999px 1.5rem 1.5rem;
+  background: #fff;
+  box-shadow: 0 0 0 2px var(--navy);
+}
+.simple-site .kl-sticker {
+  position: absolute;
+  left: -0.75rem;
+  bottom: 1.75rem;
+  transform: rotate(-7deg);
+  border-radius: 999px;
+  background: var(--pink);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  font-weight: 800;
+  font-size: 0.95rem;
+  box-shadow: 0 0 0 2px var(--navy);
+}
+
+/* Project cards: the border turns pink on hover or focus */
+.simple-site .project-card { transition: border-color 0.2s ease; }
+.simple-site .project-card:hover,
+.simple-site .project-card:focus-within { border-color: var(--pink); }
+.simple-site .card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+.simple-site .card-link:hover { color: var(--pink); }
+
+/* Project pages (rendered Markdown) */
+.simple-site .project-body { color: var(--navy); }
+.simple-site .project-body h2,
+.simple-site .project-body h3 { color: var(--navy); font-family: var(--font-display); letter-spacing: -0.02em; }
+.simple-site .project-body h2 { font-size: 1.85rem; }
+.simple-site .project-body strong { color: var(--navy); }
+.simple-site .project-body hr { border-color: var(--line); border-top-width: 2px; }
+.simple-site .project-body a { color: var(--pink); }
+.simple-site .project-body li::marker { color: var(--pink); }
+
+/* Contact card on the light page: a navy outline instead of a soft shadow */
+.simple-site .contact-card,
+.room-panel-contact .contact-card { border: 2px solid var(--navy); box-shadow: 4px 4px 0 var(--navy); border-radius: 1.25rem; color: var(--navy); }
+
+/* Room views in the same style: the resume on a white sheet with a navy
+   outline, the contact card as on the site, and a navy close button. */
+.room-panel-resume {
+  background: #fff;
+  color: var(--navy);
+  border: 2px solid var(--navy);
+  border-radius: 1.25rem;
+  box-shadow: 6px 6px 0 var(--navy), 0 30px 80px rgb(0 0 0 / 0.35);
+}
+.room-panel-resume .room-panel-title {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+  color: var(--navy);
+}
+.room-panel-resume .room-panel-close,
+.room-panel-contact .room-panel-close { color: var(--navy); background: var(--mist); }
+.room-panel-resume .room-panel-close:hover,
+.room-panel-contact .room-panel-close:hover { color: #fff; background: var(--pink); }

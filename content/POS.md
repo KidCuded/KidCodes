@@ -3,7 +3,7 @@ slug: "kidpos"
 title: "KIDPOS: Point of Sale System"
 date: "2026-07-29"
 description: "A comprehensive Java-based POS application featuring a service-oriented backend and a custom rule-based fraud detection engine."
-image: "/images/projects/KidPOS.webp"
+image: "/images/projects/kidpos-poster.webp"
 tags: ["Java", "JavaFX", "Spring Boot", "MySQL"]
 ---
 

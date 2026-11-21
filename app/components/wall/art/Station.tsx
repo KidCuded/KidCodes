@@ -284,10 +284,10 @@ export function Person() {
         <path d={`M${cx - wa} ${yH} L${cx - sh} 505 Q${cx - sh} ${yS + 2} ${cx - 36} ${yS} L${cx - 30} ${yS} Q${cx - 52} ${yS + 6} ${cx - 52} 505 L${cx - wa + 10} ${yH} Z`} fill={shade(JERSEY, -0.18)} />
         <path d={`M${cx - sh + 3} 512 L${cx - wa + 3} ${yH}`} stroke={TRIM} strokeWidth={4} />
         <path d={`M${cx + sh - 3} 512 L${cx + wa - 3} ${yH}`} stroke={TRIM} strokeWidth={4} />
-        <text x={cx} y={497} fontSize={13} fontWeight={800} letterSpacing={2.5} textAnchor="middle" fill={TRIM}>
-          {"<dev>"}
+        <text x={cx} y={505} fontSize={15} fontWeight={800} letterSpacing={2.5} textAnchor="middle" fill={TRIM}>
+          {"Kid"}
         </text>
-        <text x={cx} y={537} fontSize={36} fontWeight={900} textAnchor="middle" fill={TRIM} stroke={shade(JERSEY, -0.35)} strokeWidth={1.5} paintOrder="stroke">
+        <text x={cx} y={545} fontSize={36} fontWeight={900} textAnchor="middle" fill={TRIM} stroke={shade(JERSEY, -0.35)} strokeWidth={1.5} paintOrder="stroke">
           10
         </text>
         {/* Collar: a white rib around the neck */}
@@ -295,8 +295,8 @@ export function Person() {
         <ellipse cx={cx} cy={yS + 1} rx={16} ry={4} fill={shade(skin, -0.2)} />
       </g>
       {/* Neck */}
-      <rect x={cx - 11} y={448} width={22} height={22} rx={8} fill={skin} />
-      <rect x={cx - 11} y={448} width={22} height={7} fill={shade(skin, -0.15)} />
+      <rect x={cx - 14} y={448} width={28} height={22} rx={8} fill={skin} />
+      <rect x={cx - 11} y={448} width={25} height={7} fill={shade(skin, -0.15)} />
 
       {/* Arms: slim, with short jersey sleeves and white cuffs */}
       {arm([[cx - 71, 515], [cx - 76, 580]], skin, 21)}

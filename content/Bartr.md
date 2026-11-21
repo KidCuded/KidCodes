@@ -3,6 +3,7 @@ slug: "bartr"
 title: "Bartr: Item Trading Platform"
 date: "2025-06-20"
 description: "A web-based peer-to-peer item trading platform with real-time messaging, user ratings, and administrative controls."
+image: "/images/projects/bartr-poster.webp"
 tags: ["Python", "Flask", "SQLAlchemy", "MySQL"]
 ---
 

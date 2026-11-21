@@ -2,12 +2,8 @@
 
 import { useRef, useState } from "react";
 import { Mail, Copy, Check } from "lucide-react";
+import { CONTACT } from "@/app/lib/contact";
 
-export const CONTACT = {
-  email: "akidsyazwan@gmail.com",
-  linkedin: "https://www.linkedin.com/in/akid-syazwan-nor-azman-shah-621752236",
-  github: "https://github.com/KidCuded",
-} as const;
 
 // Shared by the envelope view in the room and the /contact page.
 export default function ContactCard() {
@@ -34,8 +30,8 @@ export default function ContactCard() {
   }
 
   return (
-    <div className="w-full max-w-md rounded-xl border border-white/10 bg-room-floor p-6 shadow-xl">
-      <h2 className="mb-4 text-xl font-bold text-white">Get in touch</h2>
+    <div className="contact-card w-full max-w-md rounded-xl border border-ink/10 bg-room-floor p-6 shadow-xl">
+      <h2 className="mb-4 text-xl font-bold text-ink">Get in touch</h2>
 
       <div className="mb-5">
         <p className="mb-1 text-sm text-ink-muted">Email</p>

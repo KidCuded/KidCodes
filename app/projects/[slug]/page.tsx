@@ -30,33 +30,39 @@ export default async function ProjectPage({ params }: PageProps) {
   if (!project) notFound();
 
   return (
-    <>
+    <div className="simple-site">
       <SiteNav variant="header" />
-      <main className="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6">
-        <Link href="/portfolio#projects" className="mb-8 inline-block py-1 text-sm font-medium text-accent hover:underline">
-          ← All projects
+      <main className="mx-auto w-full max-w-3xl px-4 pb-12 pt-32 sm:px-6">
+        <Link href="/portfolio#projects" className="mb-8 inline-block py-1 font-semibold text-[var(--pink)] hover:underline">
+          Back to all projects
         </Link>
 
-        <span className="block text-sm font-semibold text-ink-muted">{project.date}</span>
-        <h1 className="mb-4 mt-2 text-4xl font-extrabold tracking-tight text-white md:text-5xl">{project.title}</h1>
-        <p className="mb-8 text-lg leading-relaxed text-ink-muted">{project.description}</p>
+        <h1 className="font-display text-[clamp(2.5rem,6vw,4rem)] font-extrabold leading-[0.95] tracking-[-0.03em] text-[var(--navy)]">
+          {project.title}
+        </h1>
+        <p className="mt-5 text-lg leading-relaxed text-[var(--muted)]">{project.description}</p>
 
-        <hr className="mb-10 border-white/10" />
-
-        <article className="project-body" dangerouslySetInnerHTML={{ __html: project.contentHtml }} />
+        {project.tags.length > 0 && (
+          <ul className="mt-6 flex flex-wrap gap-2" aria-label="Built with">
+            {project.tags.map((t) => (
+              <li key={t} className="rounded-full bg-[var(--mist)] px-3 py-1 font-mono text-xs text-[var(--navy)]">
+                {t}
+              </li>
+            ))}
+          </ul>
+        )}
 
         {project.liveUrl && (
-          <a
-            href={project.liveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-6 inline-flex items-center gap-2 rounded-md bg-accent px-6 py-3 font-bold text-room-wall transition-colors hover:bg-white"
-          >
+          <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="btn-pink mt-8">
             <ExternalLink className="h-5 w-5" aria-hidden />
             Visit the live site <span className="sr-only">(opens in a new tab)</span>
           </a>
         )}
+
+        <hr className="my-10 border-t-2 border-[var(--line)]" />
+
+        <article className="project-body" dangerouslySetInnerHTML={{ __html: project.contentHtml }} />
       </main>
-    </>
+    </div>
   );
 }

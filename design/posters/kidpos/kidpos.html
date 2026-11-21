@@ -1,0 +1,90 @@
+<!doctype html>
+<!--
+  KidPOS poster for the project card. 1600×1000, rendered at 2x by ../render.mjs:
+    node design/posters/render.mjs design/posters/kidpos/kidpos.html public/images/projects/kidpos-poster.webp
+  Images in this folder: logo.png, register.png (till), login.png (staff picker), dashboard.png (manager view).
+  Same layout as the KABO poster, in the app's own coral. It's a desktop app, so desktop windows instead of a browser and phone.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>KidPOS poster</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@600;800&family=Plus+Jakarta+Sans:wght@600;700&display=block" rel="stylesheet" />
+<style>
+  :root { --coral: #ff7f7f; --blush: #ffe0e0; --orange: #f06a2e; --ink: #2b2324; --muted: #75605f; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1600px; height: 1000px; }
+  body {
+    position: relative; overflow: hidden; background: #fffafa;
+    font-family: "Plus Jakarta Sans", sans-serif; color: var(--ink);
+  }
+
+  /* Backdrop: coral glow top right, a little orange bottom left, dot grid behind the words */
+  .glow { position: absolute; border-radius: 50%; filter: blur(110px); }
+  .glow.coral { width: 1100px; height: 900px; right: -260px; top: -380px; background: var(--coral); opacity: .42; }
+  .glow.orange { width: 700px; height: 600px; left: -260px; bottom: -330px; background: var(--orange); opacity: .16; }
+  .grid {
+    position: absolute; inset: 0;
+    background: radial-gradient(rgb(43 35 36 / .1) 1.2px, transparent 1.6px) 0 0 / 26px 26px;
+    -webkit-mask-image: linear-gradient(90deg, #000 40%, transparent 70%);
+  }
+
+  /* Words */
+  .copy { position: absolute; left: 96px; top: 118px; width: 620px; }
+  .kicker { display: flex; align-items: center; gap: 18px; font-weight: 600; font-size: 24px; color: var(--muted); }
+  .kicker img { height: 52px; }
+  h1 { margin-top: 40px; font: 800 190px/.8 Geist, sans-serif; letter-spacing: -0.06em; }
+  .pitch { margin-top: 46px; max-width: 560px; font: 600 44px/1.12 Geist, sans-serif; letter-spacing: -0.025em; }
+  .pitch em { font-style: normal; color: #e5484d; }
+  .tags { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 12px; max-width: 520px; }
+  .tags span { padding: 10px 20px; border-radius: 999px; background: #fff; border: 2px solid rgb(43 35 36 / .1); font-weight: 600; font-size: 21px; }
+
+  /* Desktop app windows */
+  .win {
+    position: absolute; overflow: hidden; border-radius: 16px; background: #fff;
+    box-shadow: 0 40px 90px rgb(43 35 36 / .2), 0 0 0 1px rgb(43 35 36 / .08);
+  }
+  .title {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 46px; padding: 0 0 0 20px; background: #f6efef;
+    font-weight: 700; font-size: 17px; color: var(--muted);
+  }
+  .title b { display: flex; height: 100%; }
+  .title b i { width: 54px; display: grid; place-items: center; font-style: normal; font-weight: 400; font-size: 20px; color: #9b8a8a; }
+  .win img { display: block; width: 100%; }
+
+  /* The till, running off the right edge */
+  .till { left: 770px; top: 120px; width: 1000px; }
+  /* Manager view: the flagged transactions */
+  .fraud {
+    left: 950px; top: 700px; width: 720px; height: 150px;
+    background: #fff url(dashboard.png) -10px -330px / 846px auto no-repeat;
+    border-radius: 20px;
+  }
+  /* Staff sign-in */
+  .login { left: 580px; top: 610px; width: 360px; transform: rotate(-3deg); }
+</style>
+</head>
+<body>
+  <div class="glow coral"></div>
+  <div class="glow orange"></div>
+  <div class="grid"></div>
+
+  <div class="copy">
+    <p class="kicker"><img src="logo.png" alt="" />Point-of-sale system</p>
+    <h1>KidPOS</h1>
+    <p class="pitch">A till that <em>flags</em> suspicious sales as they happen.</p>
+    <div class="tags"><span>Java</span><span>JavaFX</span><span>Spring Boot</span><span>MySQL</span></div>
+  </div>
+
+  <div class="win till">
+    <div class="title">KidPOS<b><i>–</i><i>□</i><i>×</i></b></div>
+    <img src="register.png" alt="" />
+  </div>
+  <div class="win fraud"></div>
+  <div class="win login">
+    <div class="title">KidPOS<b><i>–</i><i>□</i><i>×</i></b></div>
+    <img src="login.png" alt="" />
+  </div>
+</body>
+</html>

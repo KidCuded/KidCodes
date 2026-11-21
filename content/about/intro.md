@@ -1,4 +1,4 @@
 <!-- DRAFT written by Claude from the old hero text. Akid: edit this in your own words before merging. Keep it to 2–3 short sentences so it fits the speech bubble. -->
-I'm Akid, a software engineer based in Kuala Lumpur, Malaysia.
+Hi! I'm Akid, a software engineer based in Kuala Lumpur, Malaysia.
 
-I build full-stack web apps, landing pages, and desktop software, most recently KABO, a loyalty and review platform for local businesses. I thrive on taking on new challenges and continuously expanding my skill set. To make room for that growth, I’ve developed a strong focus on time management, which naturally sparked my passion for building automated, efficient workflows. 
+I build full-stack web apps, landing pages, and desktop software, most recently KABO, a loyalty and review platform for local businesses. I thrive on taking on new challenges and continuously expanding my skill set. To make room for that growth, development for a strong focus on time management is needed, which naturally sparks passion for building automated and efficient workflows. 

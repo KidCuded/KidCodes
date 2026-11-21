@@ -129,7 +129,8 @@ export default function WallScene({ layout, projects, className }: Props) {
           <Link href="/contact" role="button" data-opens="contact" aria-label="Contact details" className="room-link" data-target="envelope">
             <rect {...box(envelope)} className="room-hit" />
           </Link>
-          <Label x={envelope.x + envelope.w / 2} y={envelope.y + envelope.h + gap * 0.3} text="Contact" size={size} intro anchor="below" />
+          {/* Above the envelope: below it is the KABO logo */}
+          <Label x={envelope.x + envelope.w / 2} y={envelope.y - gap * 0.3} text="Contact" size={size} intro />
         </g>
 
         <g className="wl-l2">

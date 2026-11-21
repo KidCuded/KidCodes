@@ -183,6 +183,22 @@ export function pegGeometry(layout: WallLayout) {
   };
 }
 
+/** The KABO logo, pinned to the pegboard under the envelope (decorative). Board units. */
+function KaboLogo({ x, y }: { x: number; y: number }) {
+  const h = 1.15; // height on the board
+  const w = h * (377 / 480); // keeps the image's proportions
+  return (
+    <g data-room="kabo-logo" aria-hidden="true">
+      {/* Soft shadow: the same image, darkened, a little down and to the left */}
+      <image href="/images/kabo-logo.webp" x={x - 0.06} y={y + 0.08} width={w} height={h} style={{ filter: "brightness(0)" }} opacity={0.22} />
+      <image href="/images/kabo-logo.webp" x={x} y={y} width={w} height={h} />
+      {/* Pin */}
+      <circle cx={x + w * 0.52} cy={y + 0.1} r={0.07} fill={P.pin} />
+      <circle cx={x + w * 0.52 - 0.022} cy={y + 0.078} r={0.022} fill="#fff" opacity={0.6} />
+    </g>
+  );
+}
+
 /** Pegboard with the resume (opens the resume view), the contact envelope and tech stickers. */
 export function Pegboard({ layout }: { layout: WallLayout }) {
   const { x, y, w, h } = layout.pegboard;
@@ -203,6 +219,7 @@ export function Pegboard({ layout }: { layout: WallLayout }) {
         <Stickers w={g.bw} h={4} />
         <ResumePaper x={g.resume.bx} y={g.resume.by} />
         <Envelope x={g.envelope.bx} y={g.envelope.by} />
+        <KaboLogo x={g.envelope.bx + 0.3} y={g.envelope.by + ENVELOPE_H + 0.14} />
       </g>
     </g>
   );

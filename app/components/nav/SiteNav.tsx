@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DoorOpen } from "lucide-react";
 import ThemeToggle from "@/app/components/wall/ThemeToggle";
 
 // Every section lives on the one-page site (/portfolio). In the room, About,
@@ -18,38 +19,47 @@ type Props = {
 };
 
 export default function SiteNav({ variant }: Props) {
-  const links = (
-    <ul className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm sm:text-base">
-      {NAV_ITEMS.map((item) => (
-        <li key={item.section}>
-          <Link
-            href={variant === "corner" ? item.roomHref : `/portfolio#${item.section}`}
-            data-opens={variant === "corner" ? item.opens : undefined}
-            className="py-2 text-ink transition-colors hover:text-accent"
-          >
-            {item.label}
-          </Link>
-        </li>
-      ))}
-    </ul>
-  );
-
   if (variant === "corner") {
     return (
       <nav id="main-nav" tabIndex={-1} aria-label="Main" className="absolute right-4 top-4 z-20 flex items-center gap-3 rounded-lg bg-room-wall/80 py-1 pl-4 pr-1.5 backdrop-blur-sm sm:right-6 sm:top-5">
-        {links}
+        <ul className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm sm:text-base">
+          {NAV_ITEMS.map((item) => (
+            <li key={item.section}>
+              <Link href={item.roomHref} data-opens={item.opens} className="py-2 text-ink transition-colors hover:text-accent">
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
         <ThemeToggle />
       </nav>
     );
   }
 
+  // One-page site: a floating frosted-glass bar with the name, the section links and a way back to the room.
+  // Resume isn't a section here (it's the Download CV button in the hero).
   return (
-    <header className="sticky top-0 z-30 border-b border-white/10 bg-room-wall/85 backdrop-blur-md">
-      <nav aria-label="Main" className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
-        <Link href="/" className="py-2 font-semibold text-accent hover:underline">
-          ← Back to room
+    <header className="glass-nav fixed inset-x-3 top-3 z-30 mx-auto max-w-6xl sm:inset-x-5 sm:top-4">
+      <nav aria-label="Main" className="flex items-center gap-3 py-2 pl-4 pr-2 sm:gap-6 sm:px-5 sm:py-2.5">
+        <Link href="/portfolio#about" className="font-display text-xl font-extrabold tracking-tight text-[var(--navy)] sm:text-2xl">
+          akid
         </Link>
-        {links}
+        <ul className="ml-auto flex items-center gap-x-4 text-sm font-semibold sm:gap-x-5 sm:text-[0.95rem]">
+          {NAV_ITEMS.filter((item) => item.section !== "resume").map((item) => (
+            <li key={item.section}>
+              <Link href={`/portfolio#${item.section}`} className="nav-link">
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <Link
+          href="/"
+          className="inline-flex shrink-0 items-center gap-2 rounded-full bg-[var(--sky)] p-2.5 text-sm font-bold text-[var(--navy)] transition-colors hover:bg-[var(--navy)] hover:text-white sm:px-4 sm:py-2"
+        >
+          <DoorOpen className="h-4 w-4" aria-hidden />
+          <span className="sr-only sm:not-sr-only">Back to the room</span>
+        </Link>
       </nav>
     </header>
   );

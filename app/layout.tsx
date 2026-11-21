@@ -1,11 +1,23 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Bricolage_Grotesque, Geist, Plus_Jakarta_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { THEME_INIT_SCRIPT } from "@/app/components/wall/theme";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta-sans",
+  subsets: ["latin"],
+});
+
+// Headings on the one-page site and project pages.
+// The hero heading on the one-page site: crisp and even.
+const geist = Geist({
+  variable: "--font-geist",
+  subsets: ["latin"],
+});
+
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
   subsets: ["latin"],
 });
 
@@ -32,7 +44,7 @@ export default function RootLayout({
 }>) {
   return (
     // suppressHydrationWarning: the theme script may set data-room-theme before React hydrates.
-    <html lang="en" className={`${plusJakartaSans.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="en" className={`${plusJakartaSans.variable} ${bricolage.variable} ${geist.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>

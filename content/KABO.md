@@ -4,7 +4,7 @@ title: "KABO: Customer Loyalty & Review Platform"
 date: "2026-10-06"
 description: "A digital loyalty platform that replaces paper stamp cards with Apple Wallet and Google Wallet passes, and turns happy customers into Google reviews."
 liveUrl: "https://kabo.my"
-image: "/images/projects/kabo.webp"
+image: "/images/projects/kabo-poster-v2.webp"
 featured: true
 tags: ["Next.js", "React", "Tailwind CSS", "Supabase", "Vercel"]
 ---

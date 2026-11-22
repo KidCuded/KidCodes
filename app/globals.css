@@ -83,6 +83,30 @@ body {
 
 /* Room objects: invisible hit areas, focus rings and labels (step c). */
 .room-link { cursor: pointer; outline: none; }
+
+/* Shelf hover: the "All projects" drawer slides out toward you, showing folders inside */
+.room-svg [data-part="drawer-front"] { transform-box: fill-box; transform-origin: 50% 100%; transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.15); }
+.room-svg:has(.room-link:is([data-target="bookshelf"], [data-target="all-projects"], [data-target="book"]):is(:hover, :focus-visible)) [data-part="drawer-front"] {
+  transform: translateY(13px) scale(1.06);
+}
+
+/* Bin hover: a crumpled paper ball fades in, winds up, and is thrown in */
+.room-svg [data-part="paper-ball"] { opacity: 0; transform-box: fill-box; transform-origin: 50% 50%; }
+@media (prefers-reduced-motion: no-preference) {
+  .room-svg:has([data-target="bin"]:hover) [data-part="paper-ball"] { animation: paper-toss 1.5s ease-in-out forwards; }
+}
+@keyframes paper-toss {
+  /* fades in beside the bin, winds up, then arcs in under the desk top */
+  0%   { opacity: 0; transform: translate(-110px, -55px) scale(0.3) rotate(0deg); }
+  22%  { opacity: 1; transform: translate(-110px, -55px) scale(1) rotate(-15deg); }
+  38%  { opacity: 1; transform: translate(-118px, -47px) scale(1) rotate(-30deg); animation-timing-function: ease-out; }
+  52%  { transform: translate(-88px, -88px) rotate(60deg); animation-timing-function: linear; }
+  64%  { transform: translate(-60px, -104px) rotate(150deg); }
+  76%  { transform: translate(-32px, -90px) rotate(240deg); animation-timing-function: ease-in; }
+  90%  { opacity: 1; transform: translate(-8px, -34px) rotate(330deg); }
+  100% { opacity: 1; transform: translate(0, 0) rotate(380deg); }
+}
+.room-hover-only { cursor: default; }
 .room-hit { fill: var(--accent); fill-opacity: 0; stroke: none; }
 .room-link:focus-visible .room-hit {
   fill-opacity: 0.08;
@@ -279,7 +303,21 @@ body {
   40% { opacity: 0.55; }
   100% { opacity: 0; transform: translateY(-10px); }
 }
-@keyframes room-breathe { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.015); } }
+/* Breathing lifts the torso a touch instead of stretching it: stretching (scaleY)
+   re-fits the jersey lettering to the pixel grid every frame, so the name jittered
+   on some screens. A small lift keeps the letters' shape exactly. */
+/* Typing: while the screen's code is being typed, the upper arms tap (each at its
+   own speed, pivoting at the shoulder). They stop when the typing pauses. */
+.room-svg [data-part="arm-l"], .room-svg [data-part="arm-r"] { transform-box: fill-box; transform-origin: 50% 8%; }
+@media (prefers-reduced-motion: no-preference) {
+  .room-svg:has(.code-screen[data-typing]) [data-part="arm-l"] { animation: type-tap-l 0.23s ease-in-out infinite alternate; }
+  .room-svg:has(.code-screen[data-typing]) [data-part="arm-r"] { animation: type-tap-r 0.19s ease-in-out infinite alternate; }
+}
+@keyframes type-tap-l { from { transform: rotate(0deg) translateY(0); } to { transform: rotate(-2.2deg) translateY(1.5px); } }
+@keyframes type-tap-r { from { transform: rotate(0deg) translateY(0); } to { transform: rotate(2.2deg) translateY(1.5px); } }
+
+@keyframes room-breathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+.room-svg [data-part="torso"] text { text-rendering: geometricPrecision; }
 @keyframes room-twinkle { 0%, 100% { opacity: 0.9; } 50% { opacity: 0.25; } }
 @keyframes room-drift { from { transform: translateX(-0.25px); } to { transform: translateX(0.25px); } }
 @keyframes room-wobble {

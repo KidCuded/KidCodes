@@ -59,14 +59,19 @@ export const portraitLayout: WallLayout = {
   height: 1700,
   skirtY: 1560,
   fairy: { x0: 40, x1: 860, y: 40, sag: 16, bulbs: 15 },
-  clock: { cx: 150, cy: 160, r: 60 },
-  aircon: { x: 360, y: 95, w: 380, h: 75 },
-  painting: { x: 70, y: 240, w: 230, h: 280 },
-  pegboard: { x: 70, y: 600, w: 470, h: 300 },
-  shelf: { x: 60, y: 930, w: 780, h: 200, cols: 3, rows: 2, props: false },
-  lightSwitch: { x: 455, y: 470, w: 35, h: 50 },
-  window: { x: 560, y: 230, w: 280, h: 330 },
-  bush: { cx: 720, baseY: 892, s: 68, bracket: true },
+  // Short phones crop the top of the scene (it's pinned to the bottom), so the
+  // top row sits low. The clock sits between the painting and the window, above
+  // the light switch; the aircon is centred.
+  clock: { cx: 418, cy: 330, r: 46 },
+  aircon: { x: 270, y: 130, w: 360, h: 70 },
+  painting: { x: 70, y: 250, w: 210, h: 240 },
+  pegboard: { x: 70, y: 545, w: 470, h: 260 },
+  // Taller shelf (200 → 285); its bottom stays clear of the monitor.
+  shelf: { x: 60, y: 845, w: 780, h: 285, cols: 3, rows: 2, props: false },
+  lightSwitch: { x: 400, y: 420, w: 35, h: 50 },
+  // Window right above the plant: tall and narrow (bottom kept above the leaves).
+  window: { x: 580, y: 215, w: 240, h: 385 },
+  bush: { cx: 700, baseY: 800, s: 66, bracket: true },
   rug: { x: 150, y: 1600, w: 600, h: 80 },
   // Desktop desk spans x 680–1240 with its floor at 780: move it to x 170–730, floor 1580.
   station: { dx: -510, dy: 800, s: 1 },

@@ -23,6 +23,8 @@ export const stationHits = {
   // The laptop is the computer (the monitor is behind Akid now)
   computer: { x: ST.laptop.x0 - 8, y: TOP - 92, w: ST.laptop.x1 - ST.laptop.x0 + 16, h: 98 },
   computerLabel: [(ST.laptop.x0 + ST.laptop.x1) / 2, TOP - 46] as [number, number],
+  // The bin: hover only (a paper ball gets thrown in)
+  bin: { x: ST.bin.x - 6, y: 688, w: ST.bin.w + 12, h: ST.floorY - 684 },
 };
 
 /* ------------------------------------------------------------------------ */
@@ -314,12 +316,23 @@ function DeskThings() {
   );
 }
 
-/** Waste bin under the desk. */
+/** Waste bin under the desk. On hover a crumpled paper ball appears and is thrown in (CSS). */
 function Bin() {
   const { x, w } = ST.bin;
   const top = 700;
+  const bx = x + w / 2;
+  // A crumpled ball: a lumpy outline and a few creases, drawn where it lands (inside the bin)
+  const lumps = Array.from({ length: 11 }, (_, k) => {
+    const a = (k / 11) * Math.PI * 2;
+    const r = 9 + ((k * 7) % 5) * 0.7 - 1.4;
+    return `${(bx + Math.cos(a) * r).toFixed(1)},${(top + 12 + Math.sin(a) * r).toFixed(1)}`;
+  }).join(" ");
   return (
     <g aria-hidden="true">
+      <g data-part="paper-ball">
+        <polygon points={lumps} fill="#f8fafc" stroke="#cbd2db" strokeWidth={1} strokeLinejoin="round" />
+        <path d={`M${bx - 5} ${top + 8} l4 3 l-2 4 M${bx + 2} ${top + 6} l1 5 l4 2 M${bx - 3} ${top + 17} l5 -2`} fill="none" stroke="#b8c0cb" strokeWidth={1.1} strokeLinecap="round" />
+      </g>
       <ContactShadow cx={x + w / 2} cy={ST.floorY + 1} rx={w * 0.6} ry={5} />
       <polygon points={`${x},${top} ${x + w},${top} ${x + w - 7},${ST.floorY} ${x + 7},${ST.floorY}`} fill="#e5e7eb" />
       <polygon points={`${x + w * 0.6},${top} ${x + w},${top} ${x + w - 7},${ST.floorY} ${x + w * 0.62},${ST.floorY}`} fill="#d3d7de" />
@@ -424,10 +437,12 @@ export function Person() {
       <rect x={cx - 9} y={677} width={18} height={34} fill="#2a3140" />
       <rect x={cx - 74} y={662} width={148} height={26} rx={12} fill={shade(P.chair, -0.15)} />
 
-      {/* Forearms and hands reach forward to the keyboard, so from behind they
-          go behind the body (drawn before the jersey); only the upper arms show */}
-      {arm([[cx - 76, 580], [ST.keyboard.x0 + 40, TOP - 6]], skin, 20)}
-      {arm([[cx + 80, 580], hand], skin, 20)}
+      {/* Forearms and hands reach forward to the keyboard, so from behind they're
+          hidden by the body (drawn before the jersey). They start just inside the
+          body, so the elbow you see is the end of the upper arm, which moves with
+          it when typing: the joint can't come apart. */}
+      {arm([[cx - 44, 576], [ST.keyboard.x0 + 40, TOP - 6]], skin, 20)}
+      {arm([[cx + 46, 576], hand], skin, 20)}
       <ellipse cx={hand[0] + 2} cy={hand[1]} rx={12} ry={8.5} fill={shade(skin, -0.06)} />
 
       {/* Jersey */}
@@ -451,12 +466,17 @@ export function Person() {
       <rect x={cx - 11} y={448} width={25} height={7} fill={shade(skin, -0.15)} />
 
       {/* Arms: slim, with short jersey sleeves and white cuffs */}
-      {arm([[cx - 71, 515], [cx - 76, 580]], skin, 21)}
-      {sleeve(-1)}
-      {arm([[cx - 69.2, 514], [cx - 71, 520]], TRIM, 35, "butt")}
-      {arm([[cx + 71, 515], [cx + 80, 580]], skin, 21)}
-      {sleeve(1)}
-      {arm([[cx + 69.2, 514], [cx + 71, 520]], TRIM, 35, "butt")}
+      {/* Upper arms tap while the code is being typed (CSS, synced to the screen) */}
+      <g data-part="arm-l">
+        {arm([[cx - 71, 515], [cx - 76, 580]], skin, 21)}
+        {sleeve(-1)}
+        {arm([[cx - 69.2, 514], [cx - 71, 520]], TRIM, 35, "butt")}
+      </g>
+      <g data-part="arm-r">
+        {arm([[cx + 71, 515], [cx + 80, 580]], skin, 21)}
+        {sleeve(1)}
+        {arm([[cx + 69.2, 514], [cx + 71, 520]], TRIM, 35, "butt")}
+      </g>
 
       {/* Head: big and round, curly hair from behind */}
       <g data-part="head">

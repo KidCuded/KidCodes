@@ -135,6 +135,20 @@ export function Shelf({ layout, projects }: { layout: WallLayout; projects: Shel
             )}
             {c.kind === "all" && (
               <g data-part="all-projects-box">
+                {/* Inside the drawer, seen when the front slides out (shelf hover) */}
+                <rect x={c.x + 7} y={c.y + 8} width={c.w - 14} height={24} fill="#2a1d14" />
+                {[0.14, 0.3, 0.5, 0.68].map((u, k) => (
+                  <rect
+                    key={u}
+                    x={c.x + 7 + (c.w - 14) * u}
+                    y={c.y + 12 + (k % 2) * 3}
+                    width={(c.w - 14) * 0.16}
+                    height={14}
+                    rx={2}
+                    fill={["#7dd3fc", "#fbcfe8", "#fde68a", "#c4b5fd"][k]}
+                  />
+                ))}
+                <g data-part="drawer-front">
                 <rect x={c.x + 5} y={c.y + 8} width={c.w - 10} height={c.h - 8} rx={4} fill="#e9e4d8" />
                 <rect x={c.x + 5} y={c.y + 8} width={c.w - 10} height={6} rx={3} fill="#f4f1ea" />
                 <rect x={c.x + c.w / 2 - 16} y={c.y + 18} width={32} height={8} rx={4} fill="#bdb5a3" />
@@ -149,8 +163,9 @@ export function Shelf({ layout, projects }: { layout: WallLayout; projects: Shel
                   fill={P.signText}
                   letterSpacing={1.2}
                 >
-                  ALL PROJECTS →
+                  ALL PROJECTS
                 </text>
+                </g>
               </g>
             )}
           </g>

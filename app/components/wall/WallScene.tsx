@@ -144,6 +144,8 @@ export default function WallScene({ layout, projects, className }: Props) {
               <rect {...box(computer)} className="room-hit" />
             </a>
             <Label x={stationHits.computerLabel[0]} y={stationHits.computerLabel[1]} text="Quick links" size={size / st.s} intro anchor="center" />
+            {/* The bin: hover only (a paper ball gets thrown in), so no link and no tab stop */}
+            <rect {...box(stationHits.bin)} className="room-hit room-hover-only" data-target="bin" aria-hidden="true" />
           </g>
 
           {/* The shelf body: a mouse-only link to /projects (the box in the shelf is the accessible one). */}

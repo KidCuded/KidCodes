@@ -85,29 +85,36 @@ const GUTTER = 16;
 export default function CodeScreen({ h }: { h: number }) {
   const rows = Math.floor((h - TOP - 4) / LINE_H);
   // `line` counts every line ever typed (it keeps growing; the source loops).
-  const [{ line, chars }, setPos] = useState({ line: 0, chars: 0 });
+  // `typing` is true while characters are going in (not during the pauses at line
+  // ends and between blocks); the room's CSS uses it to move Akid's arms.
+  const [{ line, chars, typing }, setPos] = useState({ line: 0, chars: 0, typing: false });
 
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     let timer = 0;
     if (reduced.matches) {
       // Still: show a full screen of code, no typing.
-      timer = window.setTimeout(() => setPos({ line: rows - 1, chars: LINES[(rows - 1) % LINES.length].length }), 0);
+      timer = window.setTimeout(() => setPos({ line: rows - 1, chars: LINES[(rows - 1) % LINES.length].length, typing: false }), 0);
       return () => window.clearTimeout(timer);
     }
-    const pos = { line: 0, chars: 0 };
+    const pos = { line: 0, chars: 0, typing: false };
     const tick = () => {
       let delay = 35 + Math.random() * 50; // uneven, like real typing
       if (!document.hidden) {
         const text = LINES[pos.line % LINES.length];
         if (pos.chars < text.length) {
           pos.chars++;
+          pos.typing = true;
         } else {
+          pos.typing = false;
           // Next line: a short pause, longer between blocks.
           pos.line++;
           pos.chars = 0;
           delay = text === "" ? 700 : 160;
         }
+        setPos({ ...pos });
+      } else if (pos.typing) {
+        pos.typing = false; // tab hidden: stop typing (and the arms)
         setPos({ ...pos });
       }
       timer = window.setTimeout(tick, delay);
@@ -122,7 +129,7 @@ export default function CodeScreen({ h }: { h: number }) {
   const current = LINES[line % LINES.length].slice(0, chars);
 
   return (
-    <g className="code-screen">
+    <g className="code-screen" data-typing={typing ? "" : undefined}>
       <g style={{ transform: `translateY(${-scroll}px)`, transition: "transform 0.25s ease-out" }}>
         {[first - 1, ...visible]
           .filter((g) => g >= 0)
